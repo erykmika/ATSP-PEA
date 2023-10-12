@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 // Importujemy te same biblioteki, co w main.cpp do obslugi pseudolosowosci
 
@@ -17,7 +18,9 @@ class Graph
         Graph(int N);
         Graph(std::string fname);
         ~Graph();
+        Graph& operator=(const Graph& sec);
         void printGraph();
+        void bruteForceTSP();
 
     private:
         int siz;
