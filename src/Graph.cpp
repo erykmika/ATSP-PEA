@@ -1,5 +1,6 @@
 #include "Graph.h"
 
+// Konstruktor domyslny - losowy problem dla N=5.
 Graph::Graph(): Graph(5) {}
 
 /*
@@ -54,29 +55,23 @@ Graph::Graph(std::string fname)
     }
 
     // String, do ktorego wczytujemy linie z pliku
-
     std::string buf;
 
     // Przechodzimy przez pierwsze linie pliku tekstowego (NAME, TYPE, COMMENT, ...)
-    std::getline(file, buf);
-    std::getline(file, buf);
-    std::getline(file, buf);
+    for(int i=0; i<3; i++)
+        std::getline(file, buf);
+
     std::getline(file, buf, ' ');
 
     //Pobieramy stopien macierzy z pliku
-
     std::getline(file, buf);
     siz = std::stoi(buf);
 
     // Przechodzimy przez kolejne 3 linie
-
-    std::getline(file, buf);
-    std::getline(file, buf);
-    std::getline(file, buf);
-
+    for(int i=0; i<3; i++)
+        std::getline(file, buf);
 
     // Wczytujemy dlugosci krawedzi
-
     matrix = new int*[siz];
 
     for(int i=0; i<siz; i++)
