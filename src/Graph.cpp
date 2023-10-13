@@ -1,5 +1,7 @@
 #include "Graph.h"
 
+Graph::Graph(): Graph(5) {}
+
 /*
  Konstruktor - generujemy losowy graf stopnia n do badania ATSP (asymetrycznego problemu komiwoja¿era)
  Oznacza to, ze odleglosci dla danych wierzcholkow a, b nie musza byc takie same w obie strony;
@@ -27,6 +29,15 @@ Graph::Graph(int N)
             }
         }
     }
+}
+
+// Destruktor. Zwalniamy zaalokowana dynamicznie pamiec
+Graph::~Graph()
+{
+    for(int i=0; i<siz; i++){
+        delete [] matrix[i];
+    }
+    delete [] matrix;
 }
 
 /*
@@ -196,13 +207,4 @@ void Graph::bruteForceTSP()
     }
 
     std::cout<<"\n";
-}
-
-// Destruktor. Zwalniamy zaalokowana dynamicznie pamiec
-Graph::~Graph()
-{
-    for(int i=0; i<siz; i++){
-        delete [] matrix[i];
-    }
-    delete [] matrix;
 }

@@ -18,7 +18,7 @@ int main()
 
     srand(time(NULL));
 
-    Graph g(5);
+    Graph g;
 
     bool isFinished = false;
 

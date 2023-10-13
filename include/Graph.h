@@ -15,6 +15,7 @@
 class Graph
 {
     public:
+        Graph();
         Graph(int N);
         Graph(std::string fname);
         ~Graph();
