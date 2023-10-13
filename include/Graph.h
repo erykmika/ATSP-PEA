@@ -24,7 +24,7 @@ class Graph
         void bruteForceTSP();
 
     private:
-        int siz;
+        int size;
         int** matrix;
 };
 

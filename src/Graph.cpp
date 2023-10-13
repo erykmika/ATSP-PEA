@@ -10,13 +10,13 @@ Graph::Graph(): Graph(5) {}
 */
 Graph::Graph(int N)
 {
-    siz = N;
-    matrix = new int*[siz];
+    size = N;
+    matrix = new int*[size];
 
-    for(int i=0; i<siz; i++)
+    for(int i=0; i<size; i++)
     {
-        matrix[i] = new int [siz];
-        for(int j=0; j<siz; j++)
+        matrix[i] = new int [size];
+        for(int j=0; j<size; j++)
         {
             // Jezeli komorka macierzy nie nalezy do przekatnej, ustawiamy dlugosc krawedzi jako losowa wartosc
             if(i != j)
@@ -30,15 +30,6 @@ Graph::Graph(int N)
             }
         }
     }
-}
-
-// Destruktor. Zwalniamy zaalokowana dynamicznie pamiec
-Graph::~Graph()
-{
-    for(int i=0; i<siz; i++){
-        delete [] matrix[i];
-    }
-    delete [] matrix;
 }
 
 /*
@@ -65,19 +56,19 @@ Graph::Graph(std::string fname)
 
     //Pobieramy stopien macierzy z pliku
     std::getline(file, buf);
-    siz = std::stoi(buf);
+    size = std::stoi(buf);
 
     // Przechodzimy przez kolejne 3 linie
     for(int i=0; i<3; i++)
         std::getline(file, buf);
 
     // Wczytujemy dlugosci krawedzi
-    matrix = new int*[siz];
+    matrix = new int*[size];
 
-    for(int i=0; i<siz; i++)
+    for(int i=0; i<size; i++)
     {
-        matrix[i] = new int [siz];
-        for(int j=0; j<siz; j++)
+        matrix[i] = new int [size];
+        for(int j=0; j<size; j++)
         {
             // Wartosc ciagu znakow do zmiennej pomocniczej buf, zamieniamy na dlugosc krawedzi int
             file >> buf;
@@ -89,6 +80,15 @@ Graph::Graph(std::string fname)
 
 }
 
+// Destruktor. Zwalniamy zaalokowana dynamicznie pamiec
+Graph::~Graph()
+{
+    for(int i=0; i<size; i++){
+        delete [] matrix[i];
+    }
+    delete [] matrix;
+}
+
 /*
     Operator przypisania, uzywany do "zamiany" obiektow w glownym programie
     Deealokacja i alokacja z przypisaniem odpowiednich wartosci z przypisywanego grafu
@@ -96,19 +96,19 @@ Graph::Graph(std::string fname)
 
 Graph& Graph::operator=(const Graph& sec)
 {
-    for(int i=0; i<siz; i++)
+    for(int i=0; i<size; i++)
     {
         delete [] matrix[i];
     }
     delete [] matrix;
 
-    siz = sec.siz;
-    matrix = new int*[siz];
+    size = sec.size;
+    matrix = new int*[size];
 
-    for(int i=0; i<siz; i++)
+    for(int i=0; i<size; i++)
     {
-        matrix[i] = new int [siz];
-        for(int j=0; j<siz; j++)
+        matrix[i] = new int [size];
+        for(int j=0; j<size; j++)
         {
             matrix[i][j] = sec.matrix[i][j];
         }
@@ -123,9 +123,9 @@ Graph& Graph::operator=(const Graph& sec)
 */
 void Graph::printGraph()
 {
-    for(int i=0; i<siz; i++)
+    for(int i=0; i<size; i++)
     {
-        for(int j=0; j<siz; j++)
+        for(int j=0; j<size; j++)
         {
             std::cout<<matrix[i][j]<<"\t";
         }
@@ -140,57 +140,64 @@ void Graph::printGraph()
 */
 void Graph::bruteForceTSP()
 {
+    int source = 0; // Wierzcholek startowy - wszystkie cykle Hamiltona dla danego wierzcholka sa rownowazne z wszystkimi cyklami H. dla innego
+    int permutatedElements = size - 1;  // Permutujemy n-1 elementow (poza pierwszym) - mamy (n-1)! mozliwych cyklow Hamiltona
+
     // Przygotowujemy 2 tablice - na obecna permutacje oraz na permutacje bedaca najlepsza (dotychczas) znaleziona sciezka
+    int* permutation = new int[permutatedElements];
+    int* min_solution = new int[permutatedElements];
 
-    int permutation[siz];
-    int min_solution[siz];
-
-    // Przygotowanie permutacji, najpierw 0-1-2...
-
-    for(int i=0; i<siz; i++)
+    // Przygotowanie permutacji, najpierw (0-)1-2...
+    for(int i=0; i<permutatedElements; i++)
     {
-        permutation[i] = i;
+        permutation[i] = i + 1;
     }
 
-    unsigned long long min_cost = INT_MAX;
+    unsigned int min_cost = UINT_MAX;  // Minimalny koszt - ustawiamy na maks, bedziemy szukac minimum.
 
     // Korzystajac z funkcji generujacej kolejne permutacje, przechodzimy po wszystkich w petli do..while
-
     do
     {
-        // Obecny koszt
-        unsigned long long current_cost = 0;
+        // Obecny koszt - zaczynamy od krawedzi laczacej wierzcholek startowy oraz pierwszy wierzcholek z permutacji n-1 pozostalych
+        unsigned int current_cost = matrix[source][permutation[0]];
 
         // Przechodzimy po grafie wg obecnej permutacji dodajac wagi krawedzi do kosztu
-        for(int i=0; i<siz; i++)
+        for(int i=0; i<permutatedElements-1; i++)
         {
-            // Dla danego i dodajemy dlugosc krawedzi laczacej wierzcholki i oraz i+1. Dla ostatniego operacja modulo gwarantuje powrot do poczatku.
-            current_cost += matrix[permutation[i]][permutation[(i+1)%siz]];
+            // Dla danego i dodajemy dlugosc krawedzi laczacej wierzcholki i oraz i+1.
+            current_cost += matrix[permutation[i]][permutation[i+1]];
 
             // Jezeli gorzej niz dotychczasowe minimum - przerywamy i kontynnujemy od kolejnej permutacji
-            if(current_cost > min_cost) break;
+            if(current_cost >= min_cost)
+                break;
         }
 
-        // Jezeli mamy nowe najlepsze rozwiazanie - przypisujemy koszt i zapisujemy sciezke
+        // Konczymy cykl Hamiltona
+        current_cost += matrix[permutation[permutatedElements-1]][source];
 
+        // Jezeli mamy nowe najlepsze rozwiazanie - przypisujemy koszt i zapisujemy sciezke
         if(current_cost < min_cost)
         {
             min_cost = current_cost;
 
-            for(int i=0; i<siz; i++)
+            for(int i=0; i<permutatedElements; i++)
             {
                 min_solution[i] = permutation[i];
             }
         }
     }
-    while(std::next_permutation(permutation, permutation+siz));
+    while(std::next_permutation(permutation, permutation+permutatedElements));
 
     std::cout<<"Min cost: "<<min_cost<<"\n";
-    for(int i=0; i<siz; i++)
+    std::cout<<source<<" -> ";
+    for(int i=0; i<permutatedElements; i++)
     {
         std::cout<<min_solution[i];
-        if(i<siz-1) std::cout<<" -> ";
+        if(i<permutatedElements-1) std::cout<<" -> ";
     }
 
     std::cout<<"\n";
+
+    delete [] permutation;
+    delete [] min_solution;
 }
