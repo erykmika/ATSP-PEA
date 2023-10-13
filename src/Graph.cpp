@@ -163,9 +163,6 @@ void Graph::bruteForceTSP()
 
     do
     {
-        // Czy mozna przerwac sprawdzanie - obecny koszt na pewno wiekszy od dotychczas minimalnego
-        bool isWorse = false;
-
         // Obecny koszt
         unsigned long long current_cost = 0;
 
@@ -176,14 +173,8 @@ void Graph::bruteForceTSP()
             current_cost += matrix[permutation[i]][permutation[(i+1)%siz]];
 
             // Jezeli gorzej niz dotychczasowe minimum - przerywamy i kontynnujemy od kolejnej permutacji
-            if(current_cost > min_cost)
-            {
-                isWorse = true;
-                break;
-            }
+            if(current_cost > min_cost) break;
         }
-
-        if(isWorse) continue;
 
         // Jezeli mamy nowe najlepsze rozwiazanie - przypisujemy koszt i zapisujemy sciezke
 
