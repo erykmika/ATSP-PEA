@@ -96,7 +96,7 @@ int main()
                 ns += g.measureBruteForceATSP();
                 std::cout<<"\n";
             }
-            std::cout<<"Sredni czas: "<<std::setprecision(10)<<ns/CASES<<" us.\n";
+            std::cout<<"\n\n-------Sredni czas: "<<std::setprecision(10)<<ns/CASES<<" us.-------\n\n";
             break;
         }
         case '6':

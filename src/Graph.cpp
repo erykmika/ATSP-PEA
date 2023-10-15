@@ -135,7 +135,7 @@ void Graph::printGraph()
 }
 
 /*
-    Glowna metoda klasy, sluzaca do znalezienia dlugosci najkrotszego cyklu Hamiltona (rozwiazania problemu TSP),
+    Glowna metoda klasy, sluzaca do zmierzenia czasu znalezienia dlugosci najkrotszego cyklu Hamiltona (rozwiazania problemu TSP),
     ktory spelnia warunki zadania.
 */
 double Graph::measureBruteForceATSP()
@@ -191,10 +191,11 @@ double Graph::measureBruteForceATSP()
     // Konczymy mierzenie czasu. Nie uwzgledniamy wypisywania.
     auto end = std::chrono::high_resolution_clock::now();
 
+    // Czas, ktory uplynal
     std::chrono::duration<double, std::micro> duration = end - start;
-
     double elapsed_time = duration.count();
 
+    // Wypisywanie dlugosci najlepszej sciezki, ciagu wierzcholkow (bez ostatniego - pierwszego), czasu tego co wyzej
     std::cout<<"Dlugosc sciezki: "<<std::setw(6)<<min_cost<<"; ";
     std::cout<<source<<" -> ";
     for(int i=0; i<permutatedElements; i++)
@@ -205,7 +206,7 @@ double Graph::measureBruteForceATSP()
 
     std::cout<<"\tCzas: "<<std::setprecision(10)<<std::setw(8)<<elapsed_time<<" us.";
 
+    // Zwolnienie pamieci, zwrocenie czasu jako double
     delete [] min_solution;
-
     return elapsed_time;
 }
