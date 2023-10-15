@@ -5,6 +5,8 @@
 #include "Graph.h"
 #include "PermutationArray.h"
 
+#define CASES 100 // Ile losowych instancji dla kazdego N w przypadku badania
+
 //#define PERM_TEST
 /*
 
@@ -31,6 +33,7 @@ int main()
         arr.nextPermutation();
     }
 #endif
+#ifndef PERM_TEST
     //Inicjalizujemy generator liczb pseudolosowych za pomoca wartosci czasu pobranego z systemu
 
     srand(time(NULL));
@@ -47,7 +50,7 @@ int main()
         std::cout<<"2. Generuj dane losowe\n";
         std::cout<<"3. Wyswietl wczytane/wylosowane dane\n";
         std::cout<<"4. Uruchom algorytm, wyswietl wyniki\n";
-        std::cout<<"5. Badania. Uruchom algorytm dla 100 losowych instancji problemu o rozmiarze N\n";
+        std::cout<<"5. Badania. Uruchom algorytm dla "<<CASES<<" losowych instancji problemu o rozmiarze N\n";
         std::cout<<"6. WYJSCIE\n";
         std::cout<<"------------------------------------------------------------------------------------\n";
         std::cout<<"Wybierz numer opcji: \n";
@@ -88,12 +91,12 @@ int main()
             std::cout<<"Podaj N: ";
             std::cin>>n;
             double ns = 0;
-            for(int i=0; i<100; i++){
+            for(int i=0; i<CASES; i++){
                 g = Graph(n);
                 ns += g.measureBruteForceATSP();
                 std::cout<<"\n";
             }
-            std::cout<<"Laczny czas: "<<std::setprecision(10)<<ns<<" ns.\n";
+            std::cout<<"Sredni czas: "<<std::setprecision(10)<<ns/CASES<<" us.\n";
             break;
         }
         case '6':
@@ -104,6 +107,6 @@ int main()
             break;
         }
     }
-
+#endif
     return 0;
 }

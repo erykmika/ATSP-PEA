@@ -141,7 +141,6 @@ void Graph::printGraph()
 double Graph::measureBruteForceATSP()
 {
     // Rozpoczynamy mierzenie czasu w us
-
     auto start = std::chrono::high_resolution_clock::now();
 
     int source = 0; // Wierzcholek startowy - wszystkie cykle Hamiltona dla danego wierzcholka sa rownowazne z wszystkimi cyklami H. dla innego
@@ -156,7 +155,6 @@ double Graph::measureBruteForceATSP()
     unsigned int min_cost = UINT_MAX;  // Minimalny koszt - ustawiamy na maks, bedziemy szukac minimum.
 
     // Korzystajac z metody generujacej kolejne permutacje, przechodzimy po wszystkich w petli for
-
     for(int p=0; p < PermutationArray::factorial(permutatedElements); p++)
     {
         // Obecny koszt - zaczynamy od krawedzi laczacej wierzcholek startowy oraz pierwszy wierzcholek z permutacji n-1 pozostalych
@@ -186,18 +184,18 @@ double Graph::measureBruteForceATSP()
                 min_solution[i] = permutation[i];
             }
         }
-
+        // Metoda generujaca kolejne leksykograficzne permutacje wewnetrznej tablicy obiektu permutation
         permutation.nextPermutation();
     }
 
     // Konczymy mierzenie czasu. Nie uwzgledniamy wypisywania.
     auto end = std::chrono::high_resolution_clock::now();
 
-    std::chrono::duration<double, std::nano> duration = end - start;
+    std::chrono::duration<double, std::micro> duration = end - start;
 
     double elapsed_time = duration.count();
 
-    std::cout<<"Dlugosc sciezki: "<<min_cost<<"; ";
+    std::cout<<"Dlugosc sciezki: "<<std::setw(6)<<min_cost<<"; ";
     std::cout<<source<<" -> ";
     for(int i=0; i<permutatedElements; i++)
     {
@@ -205,7 +203,7 @@ double Graph::measureBruteForceATSP()
         if(i<permutatedElements-1) std::cout<<" -> ";
     }
 
-    std::cout<<"  Czas: "<<std::setprecision(10)<<elapsed_time<<" ns.";
+    std::cout<<"\tCzas: "<<std::setprecision(10)<<std::setw(8)<<elapsed_time<<" us.";
 
     delete [] min_solution;
 

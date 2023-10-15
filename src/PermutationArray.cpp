@@ -45,7 +45,7 @@ void PermutationArray::nextPermutation()
     }
 
     int right_index = size-1;
-    int right_value = size;
+    int right_value = size+1;
 
     for(int j=right_index; j>left_index; j--)
     {
