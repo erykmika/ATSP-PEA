@@ -5,11 +5,15 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <chrono>
+#include <iomanip>
 
 // Importujemy te same biblioteki, co w main.cpp do obslugi pseudolosowosci
 
 #include <random>
 #include <time.h>
+
+#include "PermutationArray.h"
 
 
 class Graph
@@ -21,7 +25,7 @@ class Graph
         ~Graph();
         Graph& operator=(const Graph& sec);
         void printGraph();
-        void bruteForceTSP();
+        double measureBruteForceATSP();
 
     private:
         int size;

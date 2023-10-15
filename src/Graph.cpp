@@ -21,7 +21,7 @@ Graph::Graph(int N)
             // Jezeli komorka macierzy nie nalezy do przekatnej, ustawiamy dlugosc krawedzi jako losowa wartosc
             if(i != j)
             {
-                matrix[i][j] = rand()%100+1;
+                matrix[i][j] = rand()%1000+1;
             }
             // W przeciwnym razie dlugosc krawedzi = -1 (zgodnie z ustaleniami projektowymi)
             else
@@ -138,25 +138,26 @@ void Graph::printGraph()
     Glowna metoda klasy, sluzaca do znalezienia dlugosci najkrotszego cyklu Hamiltona (rozwiazania problemu TSP),
     ktory spelnia warunki zadania.
 */
-void Graph::bruteForceTSP()
+double Graph::measureBruteForceATSP()
 {
+    // Rozpoczynamy mierzenie czasu w us
+
+    auto start = std::chrono::high_resolution_clock::now();
+
     int source = 0; // Wierzcholek startowy - wszystkie cykle Hamiltona dla danego wierzcholka sa rownowazne z wszystkimi cyklami H. dla innego
     int permutatedElements = size - 1;  // Permutujemy n-1 elementow (poza pierwszym) - mamy (n-1)! mozliwych cyklow Hamiltona
 
-    // Przygotowujemy 2 tablice - na obecna permutacje oraz na permutacje bedaca najlepsza (dotychczas) znaleziona sciezka
-    int* permutation = new int[permutatedElements];
+    // Przygotowujemy tablice na permutacje bedaca najlepsza (dotychczas) znaleziona sciezka
     int* min_solution = new int[permutatedElements];
 
-    // Przygotowanie permutacji, najpierw (0-)1-2...
-    for(int i=0; i<permutatedElements; i++)
-    {
-        permutation[i] = i + 1;
-    }
+    // Obiekt klasy przechowujacej permutowana tablice
+    PermutationArray permutation(permutatedElements);
 
     unsigned int min_cost = UINT_MAX;  // Minimalny koszt - ustawiamy na maks, bedziemy szukac minimum.
 
-    // Korzystajac z funkcji generujacej kolejne permutacje, przechodzimy po wszystkich w petli do..while
-    do
+    // Korzystajac z metody generujacej kolejne permutacje, przechodzimy po wszystkich w petli for
+
+    for(int p=0; p < PermutationArray::factorial(permutatedElements); p++)
     {
         // Obecny koszt - zaczynamy od krawedzi laczacej wierzcholek startowy oraz pierwszy wierzcholek z permutacji n-1 pozostalych
         unsigned int current_cost = matrix[source][permutation[0]];
@@ -185,10 +186,18 @@ void Graph::bruteForceTSP()
                 min_solution[i] = permutation[i];
             }
         }
-    }
-    while(std::next_permutation(permutation, permutation+permutatedElements));
 
-    std::cout<<"Min cost: "<<min_cost<<"\n";
+        permutation.nextPermutation();
+    }
+
+    // Konczymy mierzenie czasu. Nie uwzgledniamy wypisywania.
+    auto end = std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double, std::nano> duration = end - start;
+
+    double elapsed_time = duration.count();
+
+    std::cout<<"Dlugosc sciezki: "<<min_cost<<"; ";
     std::cout<<source<<" -> ";
     for(int i=0; i<permutatedElements; i++)
     {
@@ -196,8 +205,9 @@ void Graph::bruteForceTSP()
         if(i<permutatedElements-1) std::cout<<" -> ";
     }
 
-    std::cout<<"\n";
+    std::cout<<"  Czas: "<<std::setprecision(10)<<elapsed_time<<" ns.";
 
-    delete [] permutation;
     delete [] min_solution;
+
+    return elapsed_time;
 }

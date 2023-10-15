@@ -3,7 +3,9 @@
 #include <time.h>
 
 #include "Graph.h"
+#include "PermutationArray.h"
 
+//#define PERM_TEST
 /*
 
 Powyzej - importujemy odpowiednie biblioteki potrzebne do interakcji z uzytkownikiem - wczytywanie/odczytywanie,
@@ -14,6 +16,21 @@ generowanie liczb pseudolosowych. Importujemy wlasna klase Graph zawierajaca str
 int main()
 {
 
+// Test klasy generujacej kolejne leksykograficzne permutacje
+
+#ifdef PERM_TEST
+    PermutationArray arr(4);
+
+    for(int i=0; i<24; i++)
+    {
+        for(int j=0; j<4; j++)
+        {
+            std::cout<<arr[j]<<" ";
+        }
+        std::cout<<"\n";
+        arr.nextPermutation();
+    }
+#endif
     //Inicjalizujemy generator liczb pseudolosowych za pomoca wartosci czasu pobranego z systemu
 
     srand(time(NULL));
@@ -62,8 +79,23 @@ int main()
             g.printGraph();
             break;
         case '4':
-            g.bruteForceTSP();
+            g.measureBruteForceATSP();
+            std::cout<<"\n";
             break;
+        case '5':
+        {
+            int n;
+            std::cout<<"Podaj N: ";
+            std::cin>>n;
+            double ns = 0;
+            for(int i=0; i<100; i++){
+                g = Graph(n);
+                ns += g.measureBruteForceATSP();
+                std::cout<<"\n";
+            }
+            std::cout<<"Laczny czas: "<<std::setprecision(10)<<ns<<" ns.\n";
+            break;
+        }
         case '6':
             isFinished = true;
             break;
