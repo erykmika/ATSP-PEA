@@ -33,14 +33,21 @@ int main()
         arr.nextPermutation();
     }
 #endif
+
 #ifndef PERM_TEST
     //Inicjalizujemy generator liczb pseudolosowych za pomoca wartosci czasu pobranego z systemu
 
     srand(time(NULL));
 
+    // Graf, ktory jest wykorzystywany i modyfikowany w opcjach 1, 2, 3, 4
     Graph g;
 
     bool isFinished = false;
+
+    /*
+        Menu programu zgodne z wytycznymi oraz dodatkowo opcja umozliwiajaca zbiorcze
+        badanie dla wielu instancji problemu o rozmiarze N
+    */
 
     while(!isFinished)
     {

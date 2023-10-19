@@ -1,18 +1,14 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include <string>
+// Biblioteki do obslugi plikow, wypisywania, pomiaru czasu, liczb pseudolosowych
 #include <iostream>
 #include <fstream>
-#include <algorithm>
 #include <chrono>
 #include <iomanip>
-
-// Importujemy te same biblioteki, co w main.cpp do obslugi pseudolosowosci
-
 #include <random>
-#include <time.h>
 
+// Wlasna biblioteka umozliwiajaca generowanie permutacji do badania problemu ATSP
 #include "PermutationArray.h"
 
 
