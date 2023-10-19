@@ -24,6 +24,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Linker>
+			<Add option="-O3" />
+		</Linker>
 		<Unit filename="include/Graph.h" />
 		<Unit filename="include/PermutationArray.h" />
 		<Unit filename="main.cpp" />

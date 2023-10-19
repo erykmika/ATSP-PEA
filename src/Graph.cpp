@@ -140,8 +140,8 @@ void Graph::printGraph()
 */
 double Graph::measureBruteForceATSP()
 {
-    // Rozpoczynamy mierzenie czasu w us
-    auto start = std::chrono::high_resolution_clock::now();
+    // Rozpoczynamy mierzenie czasu
+    auto start = std::chrono::steady_clock::now();
 
     int source = 0; // Wierzcholek startowy - wszystkie cykle Hamiltona dla danego wierzcholka sa rownowazne z wszystkimi cyklami H. dla innego
     int permutatedElements = size - 1;  // Permutujemy n-1 elementow (poza pierwszym) - mamy (n-1)! mozliwych cyklow Hamiltona
@@ -189,7 +189,7 @@ double Graph::measureBruteForceATSP()
     }
 
     // Konczymy mierzenie czasu. Nie uwzgledniamy wypisywania.
-    auto end = std::chrono::high_resolution_clock::now();
+    auto end = std::chrono::steady_clock::now();
 
     // Czas, ktory uplynal
     std::chrono::duration<double, std::micro> duration = end - start;

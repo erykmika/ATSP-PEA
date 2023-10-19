@@ -6,7 +6,6 @@
 */
 PermutationArray::PermutationArray(): PermutationArray(10) {}
 
-
 /*
     Zakladamy, ze na potrzeby algorytmu ATSP bedziemy tworzyc permutacje wierzcholkow od 1 do n-1.
     W glownym algorytmie ATSP wszystkie cykle zaczynaja sie od wierzcholka 0.
@@ -67,7 +66,7 @@ void PermutationArray::nextPermutation()
 
     /*
         Nastepnie przechodzimy ponownie od prawej strony i znajdujemy najmniejszy element wiekszy od wczesniej znalezionego elementu,
-        np. 1-2-[4]-3 => 3
+        np. 1-[2]-4-3 => 3
     */
     for(int j=right_index; j>left_index; j--)
     {
