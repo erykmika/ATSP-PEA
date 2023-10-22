@@ -138,7 +138,7 @@ void Graph::printGraph()
     Glowna metoda klasy, sluzaca do zmierzenia czasu znalezienia dlugosci najkrotszego cyklu Hamiltona (rozwiazania problemu TSP),
     ktory spelnia warunki zadania.
 */
-double Graph::measureBruteForceATSP()
+double Graph::timeBruteForceATSP()
 {
     // Rozpoczynamy mierzenie czasu
     auto start = std::chrono::steady_clock::now();
@@ -204,7 +204,7 @@ double Graph::measureBruteForceATSP()
         if(i<permutatedElements-1) std::cout<<" -> ";
     }
 
-    std::cout<<"\tCzas: "<<std::setprecision(10)<<std::setw(8)<<elapsed_time<<" us.";
+    std::cout<<"\tCzas: "<<std::setw(8)<<(int)elapsed_time<<" us.";
 
     // Zwolnienie pamieci, zwrocenie czasu jako double
     delete [] min_solution;

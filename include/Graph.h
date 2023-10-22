@@ -21,7 +21,7 @@ class Graph
         ~Graph();
         Graph& operator=(const Graph& sec);
         void printGraph();
-        double measureBruteForceATSP();
+        double timeBruteForceATSP();
 
     private:
         int size;

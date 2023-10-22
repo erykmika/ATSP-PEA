@@ -89,7 +89,7 @@ int main()
             g.printGraph();
             break;
         case '4':
-            g.measureBruteForceATSP();
+            g.timeBruteForceATSP();
             std::cout<<"\n";
             break;
         case '5':
@@ -100,10 +100,10 @@ int main()
             double ns = 0;
             for(int i=0; i<CASES; i++){
                 g = Graph(n);
-                ns += g.measureBruteForceATSP();
+                ns += g.timeBruteForceATSP();
                 std::cout<<"\n";
             }
-            std::cout<<"\n\n-------Sredni czas: "<<std::setprecision(10)<<ns/CASES<<" us.-------\n\n";
+            std::cout<<"\n\n-------Sredni czas: "<<(int)ns/CASES<<" us.-------\n\n";
             break;
         }
         case '6':
