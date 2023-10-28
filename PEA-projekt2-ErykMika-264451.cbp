@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="PEA-projekt2-ErykMika-264451" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/PEA-projekt2-ErykMika-264451" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="include/BnBNode.h" />
+		<Unit filename="include/BnBTree.h" />
+		<Unit filename="include/Graph.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/BnBNode.cpp" />
+		<Unit filename="src/BnBTree.cpp" />
+		<Unit filename="src/Graph.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
