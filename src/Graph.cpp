@@ -124,10 +124,36 @@ void Graph::printGraph(int** matrix, int n)
     }
 }
 
+void Graph::printGraph()
+{
+    for(int i=0; i<size; i++)
+    {
+        for(int j=0; j<size; j++)
+        {
+            std::cout<<matrix[i][j]<<"\t";
+        }
+
+        std::cout<<"\n";
+    }
+}
+
 // Drzewo wierzcholkow, kazdy z tablica wskaznikow do wierzcholkow potomnych 1->(n-1)->(n-2)->...->1 na kazdy poziom
 void Graph::branchAndBoundATSP()
 {
     BnBTree t(this->matrix, size);
-    int lowerBound = t.getRoot()->reduceMatrix();
-    Graph::printGraph(t.getRoot()->getMatrix(), size);
+
+    BnBNode* current = t.getRoot();
+    std::cout<<current->getCost()<<"\n";
+    Graph::printGraph(current->getMatrix(), size);
+
+    current->generateChildren();
+    BnBNode** children = current->getChildren();
+
+    for(int i=0; i<4; i++)
+    {
+        std::cout<<children[i]->getCost();
+        std::cout<<"\n";
+        //printGraph(children[i]->getMatrix(), size);
+    }
+
 }

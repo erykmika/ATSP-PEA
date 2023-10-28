@@ -21,6 +21,7 @@ class Graph
         ~Graph();
         Graph& operator=(const Graph& sec);
         static void printGraph(int** matrix, int n);
+        void printGraph();
         void branchAndBoundATSP();
         //double timeBruteForceATSP();
 

@@ -10,6 +10,7 @@ class BnBTree
         ~BnBTree();
         BnBNode* getRoot();
     private:
+        int size;
         BnBNode* root;
 };
 

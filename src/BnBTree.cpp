@@ -2,7 +2,15 @@
 
 BnBTree::BnBTree(int** matrix, int size)
 {
-    root = new BnBNode(matrix, size, size-1);
+    this->size = size;
+    bool* visitedArray = new bool[size];
+
+    for(int i=0; i<size; i++)
+        visitedArray[i] = 0;
+
+    root = new BnBNode(0, matrix, size, size-1, visitedArray, -1, -1, 0);
+
+    delete [] visitedArray;
 }
 
 BnBNode* BnBTree::getRoot()
@@ -12,5 +20,6 @@ BnBNode* BnBTree::getRoot()
 
 BnBTree::~BnBTree()
 {
+    BnBNode::cleanup(size);
     BnBNode::deleteRecursively(root);
 }
