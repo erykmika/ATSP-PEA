@@ -2,34 +2,36 @@
 #define BNBNODE_H
 
 #include <iostream>
+#include <vector>
+
+
 
 class BnBNode
 {
     public:
-        BnBNode(int nod, int** mtx, int n, int child, bool* visit,
-                int exRow, int exCol, int prevCost);
+        BnBNode(int nod, int** mtx, int n, int exRow, int exCol, int prevCost, int pathLen, std::vector<int>& prevPath);
         ~BnBNode();
         int** getMatrix();
-        BnBNode** getChildren();
-        int getCost();
-        int getEdge(int i, int j);
-        void addCost(int c);
-        void generateChildren();
-        static void deleteRecursively(BnBNode* node);
-        static void initializeOrigin(int size);
-        static void cleanup(int size);
+        int getCost() const;
+        int getNode();
+        bool isLeaf();
+        std::vector<int> path;
+        int numOfVisited;
+        bool operator<(const BnBNode& sec) const;
     private:
         int reduceMatrix();
         int** matrix;
-        static int** originMatrix;
         int size;
         int cost;
         int node;
-        bool isLeaf;
-        int numOfChildren;
-        BnBNode** children;
-        bool* visited;
-        BnBNode* root;
+};
+
+struct CmpCost
+{
+    bool operator()(const BnBNode* lhs, const BnBNode* rhs) const
+    {
+        return lhs->getCost() > rhs->getCost();
+    }
 };
 
 #endif // BNBNODE_H

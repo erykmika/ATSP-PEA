@@ -138,22 +138,55 @@ void Graph::printGraph()
 }
 
 // Drzewo wierzcholkow, kazdy z tablica wskaznikow do wierzcholkow potomnych 1->(n-1)->(n-2)->...->1 na kazdy poziom
-void Graph::branchAndBoundATSP()
+double Graph::timeBranchAndBoundATSP()
 {
-    BnBTree t(this->matrix, size);
-
-    BnBNode* current = t.getRoot();
-    std::cout<<current->getCost()<<"\n";
-    Graph::printGraph(current->getMatrix(), size);
-
-    current->generateChildren();
-    BnBNode** children = current->getChildren();
-
-    for(int i=0; i<4; i++)
+    std::vector<int>path = {};
+    auto start = std::chrono::steady_clock::now();
+    BnBNode* root = new BnBNode(0, matrix, size, -1, -1, 0, 0, path);
+    std::priority_queue<BnBNode*, std::vector<BnBNode*>, CmpCost> q;
+    //int solution = 0;
+    q.push(root);
+    while(!q.empty())
     {
-        std::cout<<children[i]->getCost();
-        std::cout<<"\n";
-        //printGraph(children[i]->getMatrix(), size);
-    }
+        BnBNode* current = q.top();
 
+        if(current->isLeaf())
+        {
+            path = current->path;
+            std::cout<<"Koszt: "<<std::setw(6)<<current->getCost()<<";\t";
+            delete current;
+            break;
+        }
+
+        q.pop();
+
+        int** currentMatrix = current->getMatrix();
+        int currentNode = current->getNode();
+
+        for(int i=0; i<size; i++)
+        {
+
+            if(currentMatrix[currentNode][i]>=0)
+            {
+                BnBNode* child = new BnBNode(i, currentMatrix, size, currentNode, i,
+                                             current->getCost() + currentMatrix[currentNode][i], current->numOfVisited, current->path);
+                q.push(child);
+            }
+        }
+
+        delete current;
+    }
+    auto end = std::chrono::steady_clock::now();
+    // Konczymy mierzenie czasu. Nie uwzgledniamy wypisywania.
+
+    // Czas, ktory uplynal
+    std::chrono::duration<double, std::micro> duration = end - start;
+    double elapsed_time = duration.count();
+    for(unsigned i=0; i<path.size(); i++)
+    {
+        std::cout<<path[i];
+        if(i<(unsigned)size-1) std::cout<<" -> ";
+    }
+    std::cout<<std::setw(9)<<elapsed_time<<" us\n";
+    return elapsed_time;
 }

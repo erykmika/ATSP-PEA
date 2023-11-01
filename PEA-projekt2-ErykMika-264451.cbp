@@ -25,11 +25,11 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="include/BnBNode.h" />
-		<Unit filename="include/BnBTree.h" />
+		<Unit filename="include/BnBNodePQ.h" />
 		<Unit filename="include/Graph.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/BnBNode.cpp" />
-		<Unit filename="src/BnBTree.cpp" />
+		<Unit filename="src/BnBNodePQ.cpp" />
 		<Unit filename="src/Graph.cpp" />
 		<Extensions />
 	</Project>

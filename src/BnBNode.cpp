@@ -1,14 +1,14 @@
 #include "BnBNode.h"
 
-int** BnBNode::originMatrix = nullptr;
-
-BnBNode::BnBNode(int nod, int** mtx, int n, int child, bool* visit,
-                 int exRow, int exCol, int prevCost)
+BnBNode::BnBNode(int nod, int** mtx, int n, int exRow, int exCol,
+                 int prevCost, int pathLen, std::vector<int>& prevPath)
 {
     node = nod;
     size = n;
-    numOfChildren = child;
     matrix = new int*[size];
+
+    path = prevPath;
+    path.push_back(node);
 
     for(int i=0; i<size; i++)
     {
@@ -34,37 +34,9 @@ BnBNode::BnBNode(int nod, int** mtx, int n, int child, bool* visit,
     }
     matrix[nod][0] = -1;
 
-    children = new BnBNode*[numOfChildren];
-    for(int i=0; i<numOfChildren; i++)
-    {
-        children[i] = NULL;
-    }
-
-    visited = new bool[n];
-
-    isLeaf = true;
-
-    for(int i=0; i<n; i++)
-    {
-        visited[i] = visit[i];
-        isLeaf = isLeaf && visit[i];
-    }
-
-    visited[nod] = true;
+    numOfVisited = pathLen+1;
 
     cost = reduceMatrix() + prevCost;
-    //std::cout<<"C = "<<cost<<"\n";
-    if(node==0)
-    {
-        initializeOrigin(size);
-        for(int i=0; i<size; i++)
-        {
-            for(int j=0; j<size; j++)
-            {
-                originMatrix[i][j] = matrix[i][j];
-            }
-        }
-    }
 }
 
 BnBNode::~BnBNode()
@@ -74,13 +46,16 @@ BnBNode::~BnBNode()
         delete [] matrix[i];
     }
     delete [] matrix;
-    delete [] children;
-    delete [] visited;
 }
 
 int** BnBNode::getMatrix()
 {
     return matrix;
+}
+
+bool BnBNode::isLeaf()
+{
+    return numOfVisited==size;
 }
 
 int BnBNode::reduceMatrix()
@@ -133,74 +108,17 @@ int BnBNode::reduceMatrix()
     return sumOfReduction;
 }
 
-void BnBNode::deleteRecursively(BnBNode* node)
-{
-    if(node == NULL) return;
-
-    // Przechodzimy po wszystkich potomkach wezla i usuwamy je rekurencyjnie
-
-    for(int i=0; i<node->numOfChildren; i++)
-    {
-        if(node->children[i]!=NULL) deleteRecursively(node->children[i]);
-    }
-
-    delete node;
-}
-
-void BnBNode::addCost(int c)
-{
-    cost += c;
-}
-
-void BnBNode::generateChildren()
-{
-    if(isLeaf) return;
-
-    int childIndex = 0;
-
-    int i = 0;
-
-    while(childIndex<numOfChildren)
-    {
-        if(visited[i]==0)
-        {
-            children[childIndex] = new BnBNode(i, matrix, size, numOfChildren-1, visited, node, i, cost + originMatrix[node][i]);
-            childIndex++;
-        }
-
-        i++;
-    }
-}
-
-int BnBNode::getCost()
+int BnBNode::getCost() const
 {
     return cost;
 }
 
-int BnBNode::getEdge(int i, int j)
+int BnBNode::getNode()
 {
-    return matrix[i][j];
+    return node;
 }
 
-BnBNode** BnBNode::getChildren()
+bool BnBNode::operator<(const BnBNode& sec) const
 {
-    return children;
-}
-
-void BnBNode::initializeOrigin(int size)
-{
-    originMatrix = new int*[size];
-    for (int i = 0; i < size; i++)
-    {
-        originMatrix[i] = new int[size];
-    }
-}
-
-void BnBNode::cleanup(int size)
-{
-    for (int i = 0; i < size; ++i)
-    {
-        delete[] originMatrix[i];
-    }
-    delete[] originMatrix;
+    return cost > sec.cost;
 }

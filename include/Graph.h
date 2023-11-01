@@ -7,9 +7,12 @@
 #include <chrono>
 #include <iomanip>
 #include <random>
+#include <queue>
+#include <iterator>
+#include <chrono>
 
 #include "BnBNode.h"
-#include "BnBTree.h"
+//#include "BnBNodePQ.h"
 
 
 class Graph
@@ -22,9 +25,7 @@ class Graph
         Graph& operator=(const Graph& sec);
         static void printGraph(int** matrix, int n);
         void printGraph();
-        void branchAndBoundATSP();
-        //double timeBruteForceATSP();
-
+        double timeBranchAndBoundATSP();
     private:
         int size;
         int** matrix;
