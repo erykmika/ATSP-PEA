@@ -8,22 +8,19 @@ Graph::Graph(): Graph(5) {}
  Oznacza to, ze odleglosci dla danych wierzcholkow a, b nie musza byc takie same w obie strony;
  |ab| niekoniecznie rowna sie |ba|.
 */
-Graph::Graph(int N)
+Graph::Graph(short int N)
 {
     size = N;
-    matrix = new int*[size];
+    matrix.resize(size, std::vector<short int>(size));
 
-    for(int i=0; i<size; i++)
+    for(short int i = 0; i < size; i++)
     {
-        matrix[i] = new int [size];
-        for(int j=0; j<size; j++)
+        for(short int j = 0; j < size; j++)
         {
-            // Jezeli komorka macierzy nie nalezy do przekatnej, ustawiamy dlugosc krawedzi jako losowa wartosc
             if(i != j)
             {
-                matrix[i][j] = rand()%1000+1;
+                matrix[i][j] = rand() % 1000 + 1;
             }
-            // W przeciwnym razie dlugosc krawedzi = -1 (zgodnie z ustaleniami projektowymi)
             else
             {
                 matrix[i][j] = -1;
@@ -33,7 +30,7 @@ Graph::Graph(int N)
 }
 
 /*
-    Konstruktor tworzacy reprezentacje grafu na podstawie pliku tekstowego wg wytycznych do projektu.
+    Konstruktor tworzacy reprezentacje grafu na podstawie pliku tekstowego o formacie wg wytycznych do projektu.
 */
 Graph::Graph(std::string fname)
 {
@@ -52,14 +49,13 @@ Graph::Graph(std::string fname)
     size = std::stoi(buf);
 
     // Wczytujemy dlugosci krawedzi
-    matrix = new int*[size];
+    matrix.resize(size, std::vector<short int>(size));
 
-    for(int i=0; i<size; i++)
+    for(short int i=0; i<size; i++)
     {
-        matrix[i] = new int [size];
-        for(int j=0; j<size; j++)
+        for(short int j=0; j<size; j++)
         {
-            // Wartosc ciagu znakow do zmiennej pomocniczej buf, zamieniamy na dlugosc krawedzi int
+            // Wartosc ciagu znakow do zmiennej pomocniczej buf, zamieniamy na dlugosc krawedzi short int
             file >> buf;
             matrix[i][j] = std::stoi(buf);
         }
@@ -69,16 +65,6 @@ Graph::Graph(std::string fname)
 
 }
 
-// Destruktor. Zwalniamy zaalokowana dynamicznie pamiec
-Graph::~Graph()
-{
-    for(int i=0; i<size; i++)
-    {
-        delete [] matrix[i];
-    }
-    delete [] matrix;
-}
-
 /*
     Operator przypisania, uzywany do "zamiany" obiektow w glownym programie
     Deealokacja i alokacja z przypisaniem odpowiednich wartosci z przypisywanego grafu
@@ -86,23 +72,8 @@ Graph::~Graph()
 
 Graph& Graph::operator=(const Graph& sec)
 {
-    for(int i=0; i<size; i++)
-    {
-        delete [] matrix[i];
-    }
-    delete [] matrix;
-
+    matrix = sec.matrix;
     size = sec.size;
-    matrix = new int*[size];
-
-    for(int i=0; i<size; i++)
-    {
-        matrix[i] = new int [size];
-        for(int j=0; j<size; j++)
-        {
-            matrix[i][j] = sec.matrix[i][j];
-        }
-    }
 
     return *this;
 }
@@ -111,11 +82,11 @@ Graph& Graph::operator=(const Graph& sec)
     Metoda do wyswietlania grafu. Iterujemy po wierszach i kolumnach.
     Wypisujemy wartosci dlugosci krawedzi.
 */
-void Graph::printGraph(int** matrix, int n)
+void Graph::printGraph(std::vector<std::vector<short int>> matrix)
 {
-    for(int i=0; i<n; i++)
+    for(short int i=0; i<(short int)matrix.size(); i++)
     {
-        for(int j=0; j<n; j++)
+        for(short int j=0; j<(short int)matrix.size(); j++)
         {
             std::cout<<matrix[i][j]<<"\t";
         }
@@ -126,9 +97,9 @@ void Graph::printGraph(int** matrix, int n)
 
 void Graph::printGraph()
 {
-    for(int i=0; i<size; i++)
+    for(short int i=0; i<size; i++)
     {
-        for(int j=0; j<size; j++)
+        for(short int j=0; j<size; j++)
         {
             std::cout<<matrix[i][j]<<"\t";
         }
@@ -140,53 +111,64 @@ void Graph::printGraph()
 // Drzewo wierzcholkow, kazdy z tablica wskaznikow do wierzcholkow potomnych 1->(n-1)->(n-2)->...->1 na kazdy poziom
 double Graph::timeBranchAndBoundATSP()
 {
-    std::vector<int>path = {};
-    auto start = std::chrono::steady_clock::now();
-    BnBNode* root = new BnBNode(0, matrix, size, -1, -1, 0, 0, path);
+    std::vector<short int>path = {};
+
+    auto start = std::chrono::system_clock::now();
+    BnBNode* root = new BnBNode(0, matrix,  -1, 0, 0, path);
+
     std::priority_queue<BnBNode*, std::vector<BnBNode*>, CmpCost> q;
-    //int solution = 0;
+
     q.push(root);
+
     while(!q.empty())
     {
         BnBNode* current = q.top();
+        q.pop();
 
         if(current->isLeaf())
         {
-            path = current->path;
+            path = current->getPath();
             std::cout<<"Koszt: "<<std::setw(6)<<current->getCost()<<";\t";
             delete current;
             break;
         }
 
-        q.pop();
+        short int currentNode = current->getNode();
 
-        int** currentMatrix = current->getMatrix();
-        int currentNode = current->getNode();
-
-        for(int i=0; i<size; i++)
+        for(short int i=0; i<size; i++)
         {
-
-            if(currentMatrix[currentNode][i]>=0)
+            short int edgeLen = current->getMatrix()[currentNode][i];
+            if(edgeLen>=0)
             {
-                BnBNode* child = new BnBNode(i, currentMatrix, size, currentNode, i,
-                                             current->getCost() + currentMatrix[currentNode][i], current->numOfVisited, current->path);
+                BnBNode* child = new BnBNode(i, current->getMatrix(), currentNode, current->getCost() + edgeLen,
+                                             current->getNumOfVisited(), current->getPath());
                 q.push(child);
             }
         }
-
         delete current;
+
     }
-    auto end = std::chrono::steady_clock::now();
+    auto end = std::chrono::system_clock::now();
     // Konczymy mierzenie czasu. Nie uwzgledniamy wypisywania.
 
     // Czas, ktory uplynal
-    std::chrono::duration<double, std::micro> duration = end - start;
+    std::chrono::duration<double, std::milli> duration = end - start;
     double elapsed_time = duration.count();
+
     for(unsigned i=0; i<path.size(); i++)
     {
         std::cout<<path[i];
         if(i<(unsigned)size-1) std::cout<<" -> ";
     }
-    std::cout<<std::setw(9)<<elapsed_time<<" us\n";
+    std::cout<<"; Czas: "<<std::setw(6)<<elapsed_time<<" ms\n";
+
+
+    while(!q.empty())
+    {
+        BnBNode* cur = q.top();
+        q.pop();
+        delete cur;
+    }
+
     return elapsed_time;
 }

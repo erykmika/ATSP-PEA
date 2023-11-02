@@ -6,10 +6,9 @@
 
 #define CASES 100 // Ile losowych instancji dla kazdego N w przypadku badania
 
-
 /*
 Powyzej - importujemy odpowiednie biblioteki potrzebne do interakcji z uzytkownikiem - wczytywanie/odczytywanie,
-generowanie liczb pseudolosowych. Importujemy wlasne klasy Graph oraz PermutationArray zawierajace strukture danych
+generowanie liczb pseudolosowych. Importujemy wlasna klase Graph zawierajaca/importujaca strukture danych
 grafu oraz badane algorymty.
 */
 

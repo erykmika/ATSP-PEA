@@ -4,33 +4,32 @@
 #include <iostream>
 #include <vector>
 
-
-
 class BnBNode
 {
     public:
-        BnBNode(int nod, int** mtx, int n, int exRow, int exCol, int prevCost, int pathLen, std::vector<int>& prevPath);
-        ~BnBNode();
-        int** getMatrix();
-        int getCost() const;
-        int getNode();
-        bool isLeaf();
-        std::vector<int> path;
-        int numOfVisited;
-        bool operator<(const BnBNode& sec) const;
+        BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, short int exRow, short int prevCost, short int pathLen, std::vector<short int>& prevPath);
+        std::vector<std::vector<short int>>& getMatrix();
+        std::vector<short int>& getPath();
+        short int getCost() const;
+        short int getNode() const;
+        short int getNumOfVisited() const;
+        bool isLeaf() const;
     private:
-        int reduceMatrix();
-        int** matrix;
-        int size;
-        int cost;
-        int node;
+        std::vector<std::vector<short int>> matrix;
+        std::vector<short int> path;
+        short int reduceMatrix();
+        short int size;
+        short int cost;
+        short int node;
+        short int numOfVisited;
+
 };
 
 struct CmpCost
 {
-    bool operator()(const BnBNode* lhs, const BnBNode* rhs) const
+    bool operator()(const BnBNode* left, const BnBNode* right) const
     {
-        return lhs->getCost() > rhs->getCost();
+        return left->getCost() > right->getCost();
     }
 };
 

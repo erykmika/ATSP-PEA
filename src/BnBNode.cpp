@@ -1,35 +1,22 @@
 #include "BnBNode.h"
 
-BnBNode::BnBNode(int nod, int** mtx, int n, int exRow, int exCol,
-                 int prevCost, int pathLen, std::vector<int>& prevPath)
+BnBNode::BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, short int exRow,
+                 short int prevCost, short int pathLen, std::vector<short int>& prevPath)
 {
     node = nod;
-    size = n;
-    matrix = new int*[size];
+    size = mtx.size();
+    matrix = mtx;
 
     path = prevPath;
     path.push_back(node);
 
-    for(int i=0; i<size; i++)
-    {
-        matrix[i] = new int [size];
-        for(int j=0; j<size; j++)
-        {
-            matrix[i][j] = mtx[i][j];
-        }
-    }
-
     // Wykluczamy wiersz i kolumne
-    if(exRow>=0 && exCol>=0)
+    if(exRow>=0)
     {
-        for(int j=0; j<size; j++)
+        for(short int i=0; i<size; i++)
         {
-            matrix[exRow][j] = -1;
-        }
-
-        for(int i=0; i<size; i++)
-        {
-            matrix[i][exCol] = -1;
+            matrix[exRow][i] = -1;
+            matrix[i][node] = -1;
         }
     }
     matrix[nod][0] = -1;
@@ -39,86 +26,60 @@ BnBNode::BnBNode(int nod, int** mtx, int n, int exRow, int exCol,
     cost = reduceMatrix() + prevCost;
 }
 
-BnBNode::~BnBNode()
-{
-    for(int i=0; i<size; i++)
-    {
-        delete [] matrix[i];
-    }
-    delete [] matrix;
-}
-
-int** BnBNode::getMatrix()
+std::vector<std::vector<short int>>& BnBNode::getMatrix()
 {
     return matrix;
 }
 
-bool BnBNode::isLeaf()
+short int BnBNode::reduceMatrix()
 {
-    return numOfVisited==size;
-}
+    short int sumOfReduction = 0;
 
-int BnBNode::reduceMatrix()
-{
-    int sumOfReduction = 0;
-
-    // Iterujemy po wierszach
-    for(int i=0; i<size; i++)
+    for(short int i=0; i<size; i++)
     {
-        int rowMin = INT_MAX;
-        // Znajdujemy minimum w wierszu, pomijamy ujemne wartosci (np. z przekatnej).
-        for(int j=0; j<size; j++)
+        short int rowMin = SHRT_MAX;
+        short int colMin = SHRT_MAX;
+        // Znajdujemy minimum w wierszu i kolumnie, pomijamy ujemne wartosci (np. z przekatnej).
+        for(short int j=0; j<size; j++)
         {
             if(matrix[i][j] >= 0 && matrix[i][j] < rowMin) rowMin = matrix[i][j];
+            if(matrix[j][i] >= 0 && matrix[j][i] < colMin) colMin = matrix[j][i];
         }
 
-        if(rowMin >= 0 && rowMin!=INT_MAX)
+        rowMin = ((rowMin>=0 && rowMin!=SHRT_MAX) ? rowMin : 0);
+        colMin = ((colMin>=0 && colMin!=SHRT_MAX) ? colMin : 0);
+        sumOfReduction += rowMin + colMin;
+
+        for(short int j=0; j<size; j++)
         {
-            // Dodajemy wartosc redukcji do sumy. Pomijamy, jezeli ujemna (np. caly wiersz wykluczony)
-            sumOfReduction += rowMin;
-            // Redukujemy wiersz o minimum
-            for(int j=0; j<size; j++)
-            {
-                matrix[i][j] -= rowMin;
-            }
+            matrix[i][j] -= rowMin;
+            matrix[j][i] -= colMin;
         }
     }
-
-    // Iterujemy po kolumnach
-    for(int j=0; j<size; j++)
-    {
-        int colMin = INT_MAX;
-        // Znajdujemy minimum w wierszu, pomijamy ujemne wartosci (np. z przekatnej).
-        for(int i=0; i<size; i++)
-        {
-            if(matrix[i][j] >= 0 && matrix[i][j] < colMin) colMin = matrix[i][j];
-        }
-        if(colMin >= 0 && colMin !=INT_MAX)
-        {
-            // Dodajemy wartosc redukcji do sumy. Pomijamy, jezeli ujemna (np. cala kolumna wykluczona)
-            sumOfReduction += colMin;
-            // Redukujemy kolumne o minimum
-            for(int i=0; i<size; i++)
-            {
-                matrix[i][j] -= colMin;
-            }
-        }
-    }
-
     return sumOfReduction;
 }
 
-int BnBNode::getCost() const
+short int BnBNode::getCost() const
 {
     return cost;
 }
 
-int BnBNode::getNode()
+short int BnBNode::getNode() const
 {
     return node;
 }
 
-bool BnBNode::operator<(const BnBNode& sec) const
+short int BnBNode::getNumOfVisited() const
 {
-    return cost > sec.cost;
+    return numOfVisited;
+}
+
+bool BnBNode::isLeaf() const
+{
+    return numOfVisited==size;
+}
+
+std::vector<short int>& BnBNode::getPath()
+{
+    return path;
 }

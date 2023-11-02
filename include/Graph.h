@@ -10,25 +10,23 @@
 #include <queue>
 #include <iterator>
 #include <chrono>
+#include <stack>
 
 #include "BnBNode.h"
-//#include "BnBNodePQ.h"
-
 
 class Graph
 {
     public:
         Graph();
-        Graph(int N);
+        Graph(short int N);
         Graph(std::string fname);
-        ~Graph();
         Graph& operator=(const Graph& sec);
-        static void printGraph(int** matrix, int n);
+        static void printGraph(std::vector<std::vector<short int>> matrix);
         void printGraph();
         double timeBranchAndBoundATSP();
     private:
-        int size;
-        int** matrix;
+        short int size;
+        std::vector<std::vector<short int>> matrix;
 };
 
 #endif // MATRIX_H
