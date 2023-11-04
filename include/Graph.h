@@ -26,6 +26,8 @@ class Graph
         static void printGraph(std::vector<std::vector<short int>> matrix);
         void printGraph();
         double timeBranchAndBoundATSP();
+        double timeBranchAndBoundATSP2();
+        short int calcUpBnd() const;
     private:
         short int size;
         std::vector<std::vector<short int>> matrix;

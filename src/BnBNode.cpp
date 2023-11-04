@@ -83,3 +83,40 @@ std::vector<short int>& BnBNode::getPath()
 {
     return path;
 }
+
+/*
+short int BnBNode::bound() const
+{
+    short int bnd = cost;
+
+    short int minCost = SHRT_MAX;
+    for (int i = 0; i < size; i++)
+    {
+        if (i != node && std::find(path.begin(), path.end(), i) == path.end())
+        {
+            minCost = std::min(minCost, matrix[node][i]);
+        }
+    }
+
+    bnd += (minCost >= 0 && minCost!=SHRT_MAX) ? minCost : 0;
+
+    for (int i = 0; i < size; i++)
+    {
+        if (std::find(path.begin(), path.end(), i) == path.end())
+        {
+            short int minCost = SHRT_MAX;
+            for (int j = 0; j < size; j++)
+            {
+                if (j != i && std::find(path.begin(), path.end(), j) == path.end())
+                {
+                    minCost = std::min(minCost, matrix[i][j]);
+                }
+            }
+
+            bnd += (minCost >= 0 && minCost!=SHRT_MAX) ? minCost : 0;
+        }
+    }
+
+    return bnd;
+}
+*/

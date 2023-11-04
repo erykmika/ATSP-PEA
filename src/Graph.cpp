@@ -119,11 +119,13 @@ double Graph::timeBranchAndBoundATSP()
     std::priority_queue<BnBNode*, std::vector<BnBNode*>, CmpCost> q;
 
     q.push(root);
+    // std::cout<<calcUpBnd()<<"\n";
 
     while(!q.empty())
     {
         BnBNode* current = q.top();
         q.pop();
+
 
         if(current->isLeaf())
         {
@@ -171,4 +173,96 @@ double Graph::timeBranchAndBoundATSP()
     }
 
     return elapsed_time;
+}
+
+double Graph::timeBranchAndBoundATSP2()
+{
+    std::vector<short int>path = {};
+    BnBNode* root = new BnBNode(0, matrix,  -1, 0, 0, path);
+    auto start = std::chrono::system_clock::now();
+    std::stack<BnBNode*> st;
+    st.push(root);
+    short int upBound = calcUpBnd();
+
+    while(!st.empty())
+    {
+        BnBNode* current = st.top();
+        st.pop();
+
+        if(current->isLeaf() && current->getCost()<=upBound)
+        {
+            path = current->getPath();
+            upBound = current->getCost();
+            delete current;
+            continue;
+        }
+
+        short int currentNode = current->getNode();
+
+        for(short int i=0; i<size; i++)
+        {
+            short int edgeLen = current->getMatrix()[currentNode][i];
+            if(edgeLen>=0)
+            {
+                BnBNode* child = new BnBNode(i, current->getMatrix(), currentNode, current->getCost() + edgeLen,
+                                             current->getNumOfVisited(), current->getPath());
+                if(child->getCost()<=upBound)
+                    st.push(child);
+                else delete child;
+            }
+        }
+        delete current;
+
+    }
+    auto end = std::chrono::system_clock::now();
+    // Czas, ktory uplynal
+    std::chrono::duration<double, std::milli> duration = end - start;
+    double elapsed_time = duration.count();
+
+    std::cout<<"Koszt: "<<std::setw(6)<<upBound<<";\t";
+    for(unsigned i=0; i<path.size(); i++)
+    {
+        std::cout<<path[i];
+        if(i<(unsigned)size-1) std::cout<<" -> ";
+    }
+    std::cout<<"; Czas: "<<std::setw(6)<<elapsed_time<<" ms\n";
+
+
+    /*
+    while(!st.empty())
+    {
+        BnBNode* cur = st.top();
+        st.pop();
+        std::cout<<"XX\n";
+        delete cur;
+    }
+*/
+    return elapsed_time;
+}
+
+short int Graph::calcUpBnd() const
+{
+    short int sum = 0;
+    std::vector<short int> visited = {};
+    visited.push_back(0);
+
+    for(short int i=0; i<size-1; i++)
+    {
+        short int dst = 0;
+        short int dstMin = SHRT_MAX;
+        short int curIndex = visited.back();
+        for(short int j=0; j<size; j++)
+        {
+            if(std::find(visited.begin(), visited.end(), j) == visited.end() && matrix[curIndex][j]<dstMin)
+            {
+                dst = j;
+                dstMin = matrix[curIndex][j];
+            }
+        }
+        visited.push_back(dst);
+        sum+=dstMin;
+    }
+    sum += matrix[visited.back()][0];
+
+    return sum;
 }

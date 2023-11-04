@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 class BnBNode
 {
@@ -15,6 +16,7 @@ class BnBNode
         short int getNode() const;
         short int getNumOfVisited() const;
         bool isLeaf() const;
+        short int bound() const;
     private:
         std::vector<std::vector<short int>> matrix;
         std::vector<short int> path;
