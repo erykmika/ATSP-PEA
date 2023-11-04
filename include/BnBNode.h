@@ -7,7 +7,8 @@
 class BnBNode
 {
     public:
-        BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, short int exRow, short int prevCost, short int pathLen, std::vector<short int>& prevPath);
+        BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, short int exRow, short int prevCost,
+                short int pathLen, std::vector<short int>& prevPath);
         std::vector<std::vector<short int>>& getMatrix();
         std::vector<short int>& getPath();
         short int getCost() const;

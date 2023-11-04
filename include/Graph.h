@@ -14,6 +14,8 @@
 
 #include "BnBNode.h"
 
+#define TIME_LIMIT 45  // sek. Maksymalny czas wykonywania algorytmu - ustalony w celu zapobiezenia nadmiernemu zuzyciu pamieci operacyjnej
+
 class Graph
 {
     public:
