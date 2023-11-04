@@ -108,87 +108,39 @@ void Graph::printGraph()
     }
 }
 
-// Drzewo wierzcholkow, kazdy z tablica wskaznikow do wierzcholkow potomnych 1->(n-1)->(n-2)->...->1 na kazdy poziom
+/*
+    Glowna metoda programu sluzaca do pomiaru czasu dzialania algorymtu branch-and-bound oraz wyswietlenia najlepszego kosztu
+    oraz najlepszej sciezki.
+*/
 double Graph::timeBranchAndBoundATSP()
 {
+    // Czy przekroczono limit czasu
+    bool timeout = false;
+    // Najlepsza znaleziona sciezka
     std::vector<short int>path = {};
-
+    // Rozpoczynamy pomiar czasu
     auto start = std::chrono::system_clock::now();
+    // Korzen drzewa rozwiazan metoda branch-and-bound
     BnBNode* root = new BnBNode(0, matrix,  -1, 0, 0, path);
-
-    std::priority_queue<BnBNode*, std::vector<BnBNode*>, CmpCost> q;
-
-    q.push(root);
-    // std::cout<<calcUpBnd()<<"\n";
-
-    while(!q.empty())
-    {
-        BnBNode* current = q.top();
-        q.pop();
-
-
-        if(current->isLeaf())
-        {
-            path = current->getPath();
-            std::cout<<"Koszt: "<<std::setw(6)<<current->getCost()<<";\t";
-            delete current;
-            break;
-        }
-
-        short int currentNode = current->getNode();
-
-        for(short int i=0; i<size; i++)
-        {
-            short int edgeLen = current->getMatrix()[currentNode][i];
-            if(edgeLen>=0)
-            {
-                BnBNode* child = new BnBNode(i, current->getMatrix(), currentNode, current->getCost() + edgeLen,
-                                             current->getNumOfVisited(), current->getPath());
-                q.push(child);
-            }
-        }
-        delete current;
-
-    }
-    auto end = std::chrono::system_clock::now();
-    // Konczymy mierzenie czasu. Nie uwzgledniamy wypisywania.
-
-    // Czas, ktory uplynal
-    std::chrono::duration<double, std::milli> duration = end - start;
-    double elapsed_time = duration.count();
-
-    for(unsigned i=0; i<path.size(); i++)
-    {
-        std::cout<<path[i];
-        if(i<(unsigned)size-1) std::cout<<" -> ";
-    }
-    std::cout<<"; Czas: "<<std::setw(6)<<elapsed_time<<" ms\n";
-
-
-    while(!q.empty())
-    {
-        BnBNode* cur = q.top();
-        q.pop();
-        delete cur;
-    }
-
-    return elapsed_time;
-}
-
-double Graph::timeBranchAndBoundATSP2()
-{
-    std::vector<short int>path = {};
-    BnBNode* root = new BnBNode(0, matrix,  -1, 0, 0, path);
-    auto start = std::chrono::system_clock::now();
+    // Inicjalizujemy stos na wierzcholki, ktore badamy
     std::stack<BnBNode*> st;
+    // Umieszczamy korzen na stosie
     st.push(root);
+    // Obliczamy gorna granice rozwiazania metoda zachlanna - koszt koncowy nie moze byc wiekszy
     short int upBound = calcUpBnd();
 
+    // Dopoki stos nie jest pusty
     while(!st.empty())
     {
+        // Zdejmujemy i usuwamy szczytowy element stosu
         BnBNode* current = st.top();
         st.pop();
 
+        /*
+            Jezeli wierzcholek to lisc i jego koszt jest mniejszy od gornej granicy,
+            zapisujemy nowa najlepsza sciezke i gorna granice. Dealokujemy pamiec. Kontynuujemy algorytm od kolejnego
+            wierzcholka na stosie.
+        */
         if(current->isLeaf() && current->getCost()<=upBound)
         {
             path = current->getPath();
@@ -197,8 +149,13 @@ double Graph::timeBranchAndBoundATSP2()
             continue;
         }
 
+        // Indeks obecnego wierzcholka
         short int currentNode = current->getNode();
 
+        /*
+            Iterujemy po wszystkich mozliwych potomkach danego wezla. Jezeli jego koszt jest mniejszy niz wartosc
+            gornego ograniczenia (jest "obiecujacy"), umieszczamy go na stosie. W przeciwnym wypadku - usuwamy.
+        */
         for(short int i=0; i<size; i++)
         {
             short int edgeLen = current->getMatrix()[currentNode][i];
@@ -211,14 +168,36 @@ double Graph::timeBranchAndBoundATSP2()
                 else delete child;
             }
         }
+        // Zwalniamy pamiec po obecnym wierzcholku
         delete current;
-
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double, std::milli> duration = end - start;
+        // Czy przekroczono limit czasu okreslony w pliku naglowkowym
+        if(duration.count()>TIME_LIMIT)
+        {
+            timeout = true;
+            break;
+        }
     }
+    // Koniec pomiaru czasu
     auto end = std::chrono::system_clock::now();
+
+    // Jezeli przekroczono limit czasu - czyscimy pamiec i zwracamy -1
+    if(timeout)
+    {
+        while(!st.empty())
+        {
+            BnBNode* del = st.top();
+            st.pop();
+            delete del;
+        }
+        return -1;
+    }
     // Czas, ktory uplynal
     std::chrono::duration<double, std::milli> duration = end - start;
     double elapsed_time = duration.count();
 
+    // Wyswietlenie rezultatow - koszt, sciezka, czas
     std::cout<<"Koszt: "<<std::setw(6)<<upBound<<";\t";
     for(unsigned i=0; i<path.size(); i++)
     {
@@ -227,41 +206,43 @@ double Graph::timeBranchAndBoundATSP2()
     }
     std::cout<<"; Czas: "<<std::setw(6)<<elapsed_time<<" ms\n";
 
-
-    /*
-    while(!st.empty())
-    {
-        BnBNode* cur = st.top();
-        st.pop();
-        std::cout<<"XX\n";
-        delete cur;
-    }
-*/
+    // Zwracamy czas
     return elapsed_time;
 }
 
+// Metoda sluzaca do zachlannego obliczenia gornej granicy dla kosztu sciezki
 short int Graph::calcUpBnd() const
 {
     short int sum = 0;
+    // Odwiedzone wierzcholki - dodajemy korzen (0)
     std::vector<short int> visited = {};
     visited.push_back(0);
 
+    // Bedziemy mieli N-1 krawedzi (poza ostatnia)
     for(short int i=0; i<size-1; i++)
     {
+        /*
+            Dla ostatniego wierzcholka w tablicy znajdujemy inny nieodwiedzony wierzcholek z minimalna wartoscia
+            dlugosci krawedzi miedzy tymi wierzcholkami.
+        */
         short int dst = 0;
         short int dstMin = SHRT_MAX;
         short int curIndex = visited.back();
         for(short int j=0; j<size; j++)
         {
+
             if(std::find(visited.begin(), visited.end(), j) == visited.end() && matrix[curIndex][j]<dstMin)
             {
                 dst = j;
                 dstMin = matrix[curIndex][j];
             }
+
         }
+        // Dodajemy "minimalny" wierzcholek do odwiedzonych, powiêkszamy koszt
         visited.push_back(dst);
         sum+=dstMin;
     }
+    // Na koncu wracamy do korzenia
     sum += matrix[visited.back()][0];
 
     return sum;

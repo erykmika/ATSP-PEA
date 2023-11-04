@@ -14,7 +14,8 @@
 
 #include "BnBNode.h"
 
-#define TIME_LIMIT 45  // sek. Maksymalny czas wykonywania algorytmu - ustalony w celu zapobiezenia nadmiernemu zuzyciu pamieci operacyjnej
+#define TIME_LIMIT 300000  // 5 min = 300000 ms Maksymalny czas wykonywania algorytmu
+//#define TIME_LIMIT 10000
 
 class Graph
 {
@@ -26,7 +27,6 @@ class Graph
         static void printGraph(std::vector<std::vector<short int>> matrix);
         void printGraph();
         double timeBranchAndBoundATSP();
-        double timeBranchAndBoundATSP2();
         short int calcUpBnd() const;
     private:
         short int size;

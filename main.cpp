@@ -68,7 +68,7 @@ int main()
             g.printGraph();
             break;
         case '4':
-            g.timeBranchAndBoundATSP2();
+            g.timeBranchAndBoundATSP();
             std::cout<<"\n";
             break;
         case '5':

@@ -1,5 +1,6 @@
 #include "BnBNode.h"
 
+// Konstruktor wierzcholka drzewa algorytmu branch-and-bound
 BnBNode::BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, short int exRow,
                  short int prevCost, short int pathLen, std::vector<short int>& prevPath)
 {
@@ -26,15 +27,18 @@ BnBNode::BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, 
     cost = reduceMatrix() + prevCost;
 }
 
+// Zwrocenie referencji do macierzy wierzcholka
 std::vector<std::vector<short int>>& BnBNode::getMatrix()
 {
     return matrix;
 }
 
+// Metoda redukujaca macierz - obliczenie ograniczenia dolnego
 short int BnBNode::reduceMatrix()
 {
     short int sumOfReduction = 0;
 
+    // Petla do przechodzenia jednoczesnie po wierszach i kolumnach macierzy wierzcholka
     for(short int i=0; i<size; i++)
     {
         short int rowMin = SHRT_MAX;
@@ -45,11 +49,13 @@ short int BnBNode::reduceMatrix()
             if(matrix[i][j] >= 0 && matrix[i][j] < rowMin) rowMin = matrix[i][j];
             if(matrix[j][i] >= 0 && matrix[j][i] < colMin) colMin = matrix[j][i];
         }
-
-        rowMin = ((rowMin>=0 && rowMin!=SHRT_MAX) ? rowMin : 0);
-        colMin = ((colMin>=0 && colMin!=SHRT_MAX) ? colMin : 0);
+        // Mozliwe, ze 0 - wczesniej pozostalo MAX
+        rowMin = ((/*(rowMin>=0 && */rowMin!=SHRT_MAX) ? rowMin : 0);
+        colMin = ((/*(colMin>=0 && */colMin!=SHRT_MAX) ? colMin : 0);
+        // Koszt - suma redukcji wierszy row i kolumn col
         sumOfReduction += rowMin + colMin;
 
+        // Redukujemy macierz
         for(short int j=0; j<size; j++)
         {
             matrix[i][j] -= rowMin;
@@ -58,6 +64,8 @@ short int BnBNode::reduceMatrix()
     }
     return sumOfReduction;
 }
+
+// Gettery - zwracaja kolejno koszt wierzcholka, indeks (numer), liczbe odwiedzonych dotychczas wierzcholkow
 
 short int BnBNode::getCost() const
 {
@@ -74,49 +82,14 @@ short int BnBNode::getNumOfVisited() const
     return numOfVisited;
 }
 
+// Czy wierzcholek jest lisciem
 bool BnBNode::isLeaf() const
 {
     return numOfVisited==size;
 }
 
+// Metoda zwracajaca sciezke dla danego wierzcholka
 std::vector<short int>& BnBNode::getPath()
 {
     return path;
 }
-
-/*
-short int BnBNode::bound() const
-{
-    short int bnd = cost;
-
-    short int minCost = SHRT_MAX;
-    for (int i = 0; i < size; i++)
-    {
-        if (i != node && std::find(path.begin(), path.end(), i) == path.end())
-        {
-            minCost = std::min(minCost, matrix[node][i]);
-        }
-    }
-
-    bnd += (minCost >= 0 && minCost!=SHRT_MAX) ? minCost : 0;
-
-    for (int i = 0; i < size; i++)
-    {
-        if (std::find(path.begin(), path.end(), i) == path.end())
-        {
-            short int minCost = SHRT_MAX;
-            for (int j = 0; j < size; j++)
-            {
-                if (j != i && std::find(path.begin(), path.end(), j) == path.end())
-                {
-                    minCost = std::min(minCost, matrix[i][j]);
-                }
-            }
-
-            bnd += (minCost >= 0 && minCost!=SHRT_MAX) ? minCost : 0;
-        }
-    }
-
-    return bnd;
-}
-*/

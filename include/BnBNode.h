@@ -28,12 +28,4 @@ class BnBNode
 
 };
 
-struct CmpCost
-{
-    bool operator()(const BnBNode* left, const BnBNode* right) const
-    {
-        return left->getCost() > right->getCost();
-    }
-};
-
 #endif // BNBNODE_H
