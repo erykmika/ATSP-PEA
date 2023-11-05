@@ -8,23 +8,23 @@
 class BnBNode
 {
     public:
-        BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, short int exRow, short int prevCost,
-                short int pathLen, std::vector<short int>& prevPath);
-        std::vector<std::vector<short int>>& getMatrix();
-        std::vector<short int>& getPath();
-        short int getCost() const;
-        short int getNode() const;
-        short int getNumOfVisited() const;
+        BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow, int prevCost,
+                int pathLen, std::vector<int>& prevPath);
+        std::vector<std::vector<int>>& getMatrix();
+        std::vector<int>& getPath();
+        int getCost() const;
+        int getNode() const;
+        int getNumOfVisited() const;
         bool isLeaf() const;
-        short int bound() const;
+        int bound() const;
     private:
-        std::vector<std::vector<short int>> matrix;
-        std::vector<short int> path;
-        short int reduceMatrix();
-        short int size;
-        short int cost;
-        short int node;
-        short int numOfVisited;
+        std::vector<std::vector<int>> matrix;
+        std::vector<int> path;
+        int reduceMatrix();
+        int size;
+        int cost;
+        int node;
+        int numOfVisited;
 
 };
 

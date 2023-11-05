@@ -24,6 +24,9 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Linker>
+			<Add option="-static" />
+		</Linker>
 		<Unit filename="include/BnBNode.h" />
 		<Unit filename="include/Graph.h" />
 		<Unit filename="main.cpp" />

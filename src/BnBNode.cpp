@@ -1,8 +1,8 @@
 #include "BnBNode.h"
 
 // Konstruktor wierzcholka drzewa algorytmu branch-and-bound
-BnBNode::BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, short int exRow,
-                 short int prevCost, short int pathLen, std::vector<short int>& prevPath)
+BnBNode::BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow,
+                 int prevCost, int pathLen, std::vector<int>& prevPath)
 {
     node = nod;
     size = mtx.size();
@@ -14,7 +14,7 @@ BnBNode::BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, 
     // Wykluczamy wiersz i kolumne
     if(exRow>=0)
     {
-        for(short int i=0; i<size; i++)
+        for(int i=0; i<size; i++)
         {
             matrix[exRow][i] = -1;
             matrix[i][node] = -1;
@@ -28,35 +28,35 @@ BnBNode::BnBNode(short int nod, const std::vector<std::vector<short int>>& mtx, 
 }
 
 // Zwrocenie referencji do macierzy wierzcholka
-std::vector<std::vector<short int>>& BnBNode::getMatrix()
+std::vector<std::vector<int>>& BnBNode::getMatrix()
 {
     return matrix;
 }
 
 // Metoda redukujaca macierz - obliczenie ograniczenia dolnego
-short int BnBNode::reduceMatrix()
+int BnBNode::reduceMatrix()
 {
-    short int sumOfReduction = 0;
+    int sumOfReduction = 0;
 
     // Petla do przechodzenia jednoczesnie po wierszach i kolumnach macierzy wierzcholka
-    for(short int i=0; i<size; i++)
+    for(int i=0; i<size; i++)
     {
-        short int rowMin = SHRT_MAX;
-        short int colMin = SHRT_MAX;
+        int rowMin = INT_MAX;
+        int colMin = INT_MAX;
         // Znajdujemy minimum w wierszu i kolumnie, pomijamy ujemne wartosci (np. z przekatnej).
-        for(short int j=0; j<size; j++)
+        for(int j=0; j<size; j++)
         {
             if(matrix[i][j] >= 0 && matrix[i][j] < rowMin) rowMin = matrix[i][j];
             if(matrix[j][i] >= 0 && matrix[j][i] < colMin) colMin = matrix[j][i];
         }
         // Mozliwe, ze 0 - wczesniej pozostalo MAX
-        rowMin = ((/*(rowMin>=0 && */rowMin!=SHRT_MAX) ? rowMin : 0);
-        colMin = ((/*(colMin>=0 && */colMin!=SHRT_MAX) ? colMin : 0);
+        rowMin = ((rowMin!=INT_MAX) ? rowMin : 0);
+        colMin = ((colMin!=INT_MAX) ? colMin : 0);
         // Koszt - suma redukcji wierszy row i kolumn col
         sumOfReduction += rowMin + colMin;
 
         // Redukujemy macierz
-        for(short int j=0; j<size; j++)
+        for(int j=0; j<size; j++)
         {
             matrix[i][j] -= rowMin;
             matrix[j][i] -= colMin;
@@ -67,17 +67,17 @@ short int BnBNode::reduceMatrix()
 
 // Gettery - zwracaja kolejno koszt wierzcholka, indeks (numer), liczbe odwiedzonych dotychczas wierzcholkow
 
-short int BnBNode::getCost() const
+int BnBNode::getCost() const
 {
     return cost;
 }
 
-short int BnBNode::getNode() const
+int BnBNode::getNode() const
 {
     return node;
 }
 
-short int BnBNode::getNumOfVisited() const
+int BnBNode::getNumOfVisited() const
 {
     return numOfVisited;
 }
@@ -89,7 +89,7 @@ bool BnBNode::isLeaf() const
 }
 
 // Metoda zwracajaca sciezke dla danego wierzcholka
-std::vector<short int>& BnBNode::getPath()
+std::vector<int>& BnBNode::getPath()
 {
     return path;
 }

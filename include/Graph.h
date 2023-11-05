@@ -8,29 +8,28 @@
 #include <iomanip>
 #include <random>
 #include <queue>
-#include <iterator>
 #include <chrono>
 #include <stack>
 
 #include "BnBNode.h"
 
+#define TIME_LIMIT_ON
 #define TIME_LIMIT 300000  // 5 min = 300000 ms Maksymalny czas wykonywania algorytmu
-//#define TIME_LIMIT 10000
+//#define TIME_LIMIT 500
 
 class Graph
 {
     public:
         Graph();
-        Graph(short int N);
+        Graph(int N);
         Graph(std::string fname);
         Graph& operator=(const Graph& sec);
-        static void printGraph(std::vector<std::vector<short int>> matrix);
-        void printGraph();
-        double timeBranchAndBoundATSP();
-        short int calcUpBnd() const;
+        void printGraph() const;
+        double timeBranchAndBoundATSP() const;
+        int calcUpBnd() const;
     private:
-        short int size;
-        std::vector<std::vector<short int>> matrix;
+        int size;
+        std::vector<std::vector<int>> matrix;
 };
 
 #endif // MATRIX_H

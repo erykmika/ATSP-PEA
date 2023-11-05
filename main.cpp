@@ -77,11 +77,16 @@ int main()
             std::cout<<"Podaj N: ";
             std::cin>>n;
             double ns = 0;
+            int unfinished = 0;
             for(int i=0; i<CASES; i++){
                 g = Graph(n);
-                ns += g.timeBranchAndBoundATSP();
+                double currentResult = g.timeBranchAndBoundATSP();
+                // Jezeli przekroczono limit czasu, z metody zwracana jest liczba ujemna.
+                if(currentResult < 0) unfinished++;
+                else ns += currentResult;
             }
-            std::cout<<"\n\n-------Sredni czas: "<<(int)ns/CASES<<" us.-------\n\n";
+            std::cout<<"\n\n-------Sredni czas: "<<(int)ns/(CASES-unfinished)<<" us.-------\n";
+            std::cout<<"-------Przerwano: "<<((float)unfinished/CASES)*100<<"% problemow ("<<unfinished<<").-------\n\n";
             break;
         }
         case '6':
