@@ -9,11 +9,12 @@
 #include <random>
 #include <queue>
 #include <chrono>
-#include <stack>
+//#include <stack>
 
 #include "BnBNode.h"
+#include "BnBStack.h"
 
-#define TIME_LIMIT_ON
+//#define TIME_LIMIT_ON
 #define TIME_LIMIT 300000  // 5 min = 300000 ms Maksymalny czas wykonywania algorytmu
 //#define TIME_LIMIT 500
 

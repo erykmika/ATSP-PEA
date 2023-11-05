@@ -28,9 +28,11 @@
 			<Add option="-static" />
 		</Linker>
 		<Unit filename="include/BnBNode.h" />
+		<Unit filename="include/BnBStack.h" />
 		<Unit filename="include/Graph.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/BnBNode.cpp" />
+		<Unit filename="src/BnBStack.cpp" />
 		<Unit filename="src/Graph.cpp" />
 		<Extensions />
 	</Project>

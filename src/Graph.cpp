@@ -97,8 +97,10 @@ void Graph::printGraph() const
 */
 double Graph::timeBranchAndBoundATSP() const
 {
+    #ifdef TIME_LIMIT_ON
     // Czy przekroczono limit czasu
     bool timeout = false;
+    #endif // TIME_LIMIT_ON
     // Najlepsza znaleziona sciezka
     std::vector<int>path = {};
     // Rozpoczynamy pomiar czasu
@@ -106,17 +108,17 @@ double Graph::timeBranchAndBoundATSP() const
     // Korzen drzewa rozwiazan metoda branch-and-bound
     BnBNode* root = new BnBNode(0, matrix,  -1, 0, 0, path);
     // Inicjalizujemy stos na wierzcholki, ktore badamy
-    std::stack<BnBNode*> st;
+    BnBStack st;
     // Umieszczamy korzen na stosie
     st.push(root);
     // Obliczamy gorna granice rozwiazania metoda zachlanna - koszt koncowy nie moze byc wiekszy
     int upBound = calcUpBnd();
 
     // Dopoki stos nie jest pusty
-    while(!st.empty())
+    while(!st.isEmpty())
     {
         // Zdejmujemy i usuwamy szczytowy element stosu
-        BnBNode* current = st.top();
+        BnBNode* current = st.peek();
         st.pop();
 
         /*
@@ -171,9 +173,9 @@ double Graph::timeBranchAndBoundATSP() const
     // Jezeli przekroczono limit czasu - zwalniamy pamiec i zwracamy -1
     if(timeout)
     {
-        while(!st.empty())
+        while(!st.isEmpty())
         {
-            BnBNode* del = st.top();
+            BnBNode* del = st.peek();
             st.pop();
             delete del;
         }

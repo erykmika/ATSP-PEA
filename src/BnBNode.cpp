@@ -25,6 +25,8 @@ BnBNode::BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow,
     numOfVisited = pathLen+1;
 
     cost = reduceMatrix() + prevCost;
+
+    next = NULL;
 }
 
 // Zwrocenie referencji do macierzy wierzcholka
@@ -82,10 +84,20 @@ int BnBNode::getNumOfVisited() const
     return numOfVisited;
 }
 
+BnBNode* BnBNode::getNext() const
+{
+    return next;
+}
+
 // Czy wierzcholek jest lisciem
 bool BnBNode::isLeaf() const
 {
     return numOfVisited==size;
+}
+
+void BnBNode::setNext(BnBNode* nxt)
+{
+    next = nxt;
 }
 
 // Metoda zwracajaca sciezke dla danego wierzcholka

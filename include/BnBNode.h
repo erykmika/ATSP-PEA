@@ -17,6 +17,8 @@ class BnBNode
         int getNumOfVisited() const;
         bool isLeaf() const;
         int bound() const;
+        BnBNode* getNext() const;
+        void setNext(BnBNode* nxt);
     private:
         std::vector<std::vector<int>> matrix;
         std::vector<int> path;
@@ -25,7 +27,7 @@ class BnBNode
         int cost;
         int node;
         int numOfVisited;
-
+        BnBNode* next;
 };
 
 #endif // BNBNODE_H
