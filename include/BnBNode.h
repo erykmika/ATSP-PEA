@@ -3,30 +3,39 @@
 
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
 class BnBNode
 {
     public:
-        BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow, int prevCost,
-                int pathLen, std::vector<int>& prevPath);
+        // Konstruktor
+        BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow, int prevCost, std::vector<int>& prevPath);
+        // Zwrocenie referencji do macierzy wierzcholka
         std::vector<std::vector<int>>& getMatrix();
+        // Zwrocenie referencji do sciezki wierzcholka
         std::vector<int>& getPath();
+        // Gettery (koszt, indeks wierzcholka, liczba odwiedzonych, wskaznik na nastepny)
         int getCost() const;
         int getNode() const;
         int getNumOfVisited() const;
-        bool isLeaf() const;
-        int bound() const;
         BnBNode* getNext() const;
+        // Czy wierzcholek jest lisciem
+        bool isLeaf() const;
+        // Ustaw nastepny wierzcholek na stosie
         void setNext(BnBNode* nxt);
     private:
+        // Macierz dla konkretnego wierzcholka drzewa rozwiazan metoda branch-and-bound
         std::vector<std::vector<int>> matrix;
+        // Sciezka - czesciowe/calkowite rozwiazanie dla danego wierzcholka
         std::vector<int> path;
+        // Metoda redukujaca macierz - obliczenie ograniczenia dolnego
         int reduceMatrix();
+        // Rozmiar problemu
         int size;
+        // Koszt przypisany do konkretnego wierzcholka
         int cost;
+        // Indeks wierzcholka, ktory jest reprezentowany
         int node;
-        int numOfVisited;
+        // Wskaznik na nastepny wierzcholek na stosie
         BnBNode* next;
 };
 

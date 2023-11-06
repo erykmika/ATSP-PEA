@@ -68,25 +68,53 @@ int main()
             g.printGraph();
             break;
         case '4':
-            g.timeBranchAndBoundATSP();
+        {
+            char choice = '1';
+            std::cout<<"Bez limitu czasu (1) czy z limitem czasu (2): ";
+            std::cin>>choice;
+            if(choice=='1')
+            {
+                g.timeBranchAndBoundATSP();
+            }
+            else
+            {
+                std::cout<<"Wybrano opcje z limitem czasu.\n";
+                if(g.timeBranchAndBoundATSPlimited() < 0) std::cout<<"Przekroczono limit czasu!\n";
+            }
             std::cout<<"\n";
             break;
+        }
         case '5':
         {
             int n;
             std::cout<<"Podaj N: ";
             std::cin>>n;
+            char choice = '1';
+            std::cout<<"Bez limitu czasu (1) czy z limitem czasu (2): ";
+            std::cin>>choice;
             double ns = 0;
             int unfinished = 0;
-            for(int i=0; i<CASES; i++){
+            for(int i=0; i<CASES; i++)
+            {
+                double currentResult;
                 g = Graph(n);
-                double currentResult = g.timeBranchAndBoundATSP();
+                if(choice=='1')
+                    currentResult = g.timeBranchAndBoundATSP();
+                else
+                    currentResult = g.timeBranchAndBoundATSPlimited();
                 // Jezeli przekroczono limit czasu, z metody zwracana jest liczba ujemna.
                 if(currentResult < 0) unfinished++;
                 else ns += currentResult;
             }
-            std::cout<<"\n\n-------Sredni czas: "<<(int)ns/(CASES-unfinished)<<" us.-------\n";
-            std::cout<<"-------Przerwano: "<<((float)unfinished/CASES)*100<<"% problemow ("<<unfinished<<").-------\n\n";
+            if(choice=='1')
+            {
+                std::cout<<"\n\n-------Sredni czas: "<<(int)ns/(CASES)<<" ms.-------\n";
+            }
+            else
+            {
+                std::cout<<"\n\n-------Sredni czas: "<<(int)ns/(CASES-unfinished)<<" ms.-------\n";
+                std::cout<<"-------Przerwano: "<<((float)unfinished/CASES)*100<<"% problemow ("<<unfinished<<").-------\n\n";
+            }
             break;
         }
         case '6':

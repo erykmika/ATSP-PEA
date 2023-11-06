@@ -32,6 +32,3 @@ void BnBStack::pop()
     if(top==NULL) return;
     top = top->getNext();
 }
-
-// Dealokacja pamieci wskazanej przez wskazniki odbywa sie manualnie w metodzie klasy Graph
-BnBStack::~BnBStack() {}

@@ -2,7 +2,7 @@
 
 // Konstruktor wierzcholka drzewa algorytmu branch-and-bound
 BnBNode::BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow,
-                 int prevCost, int pathLen, std::vector<int>& prevPath)
+                 int prevCost, std::vector<int>& prevPath)
 {
     node = nod;
     size = mtx.size();
@@ -11,7 +11,7 @@ BnBNode::BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow,
     path = prevPath;
     path.push_back(node);
 
-    // Wykluczamy wiersz i kolumne
+    // Wykluczamy wiersz i kolumne - ustawiamy je na -1
     if(exRow>=0)
     {
         for(int i=0; i<size; i++)
@@ -20,12 +20,12 @@ BnBNode::BnBNode(int nod, const std::vector<std::vector<int>>& mtx, int exRow,
             matrix[i][node] = -1;
         }
     }
+    // Wykluczamy takze krawedz do korzenia
     matrix[nod][0] = -1;
-
-    numOfVisited = pathLen+1;
 
     cost = reduceMatrix() + prevCost;
 
+    // Wskaznik na nastepny wierzcholek/wezel na stosie
     next = NULL;
 }
 
@@ -67,8 +67,7 @@ int BnBNode::reduceMatrix()
     return sumOfReduction;
 }
 
-// Gettery - zwracaja kolejno koszt wierzcholka, indeks (numer), liczbe odwiedzonych dotychczas wierzcholkow
-
+// Gettery - zwracaja kolejno koszt wierzcholka, indeks (numer), liczbe odwiedzonych dotychczas wierzcholkow, wskaznik do nast. na stosie
 int BnBNode::getCost() const
 {
     return cost;
@@ -81,7 +80,7 @@ int BnBNode::getNode() const
 
 int BnBNode::getNumOfVisited() const
 {
-    return numOfVisited;
+    return path.size();
 }
 
 BnBNode* BnBNode::getNext() const
@@ -92,9 +91,10 @@ BnBNode* BnBNode::getNext() const
 // Czy wierzcholek jest lisciem
 bool BnBNode::isLeaf() const
 {
-    return numOfVisited==size;
+    return path.size()==(unsigned)size;
 }
 
+// Ustawianie wskaznika do nastepnego wierzcholka na stosie
 void BnBNode::setNext(BnBNode* nxt)
 {
     next = nxt;
