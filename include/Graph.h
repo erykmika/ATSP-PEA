@@ -15,6 +15,7 @@
 
 #define TIME_LIMIT 300000  // 5 min = 300 000 ms = Maksymalny czas wykonywania algorytmu
 
+// Klasa reprezentujaca graf, na ktorym badamy algorytmy rozwiazujace problem ATSP
 class Graph
 {
     public:

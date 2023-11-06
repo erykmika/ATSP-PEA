@@ -92,6 +92,7 @@ int main()
             char choice = '1';
             std::cout<<"Bez limitu czasu (1) czy z limitem czasu (2): ";
             std::cin>>choice;
+            if(choice!='1') std::cout<<"Wybrano opcje z limitem czasu.\n";
             double ns = 0;
             int unfinished = 0;
             for(int i=0; i<CASES; i++)
@@ -108,7 +109,7 @@ int main()
             }
             if(choice=='1')
             {
-                std::cout<<"\n\n-------Sredni czas: "<<(int)ns/(CASES)<<" ms.-------\n";
+                std::cout<<"\n\n-------Sredni czas: "<<(int)ns/(CASES)<<" ms.-------\n\n";
             }
             else
             {

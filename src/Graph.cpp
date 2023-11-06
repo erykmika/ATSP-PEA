@@ -172,7 +172,7 @@ double Graph::timeBranchAndBoundATSP() const
     }
     std::cout<<"; Czas: "<<std::setw(6)<<elapsed_time<<" ms\n";
 
-    // Zwracamy czas
+    // Zwracamy czas w milisekundach
     return elapsed_time;
 }
 
@@ -201,7 +201,7 @@ double Graph::timeBranchAndBoundATSPlimited() const
     // Obliczamy gorna granice rozwiazania metoda zachlanna - koszt koncowy nie moze byc wiekszy
     int upBound = calcUpBnd();
 
-    int terminationCheck = 1;
+    unsigned long long terminationCheck = 1;
     // Dopoki stos nie jest pusty
     while(!st.isEmpty())
     {
@@ -285,7 +285,7 @@ double Graph::timeBranchAndBoundATSPlimited() const
     }
     std::cout<<"; Czas: "<<std::setw(6)<<elapsed_time<<" ms\n";
 
-    // Zwracamy czas
+    // Zwracamy czas w milikseundach
     return elapsed_time;
 }
 
