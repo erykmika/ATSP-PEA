@@ -319,7 +319,7 @@ int Graph::calcUpBnd() const
                 }
             }
 
-            if(/*std::find(visited.begin(), visited.end(), j) == visited.end()*/ !isInVisited && matrix[curIndex][j]<dstMin)
+            if(!isInVisited && matrix[curIndex][j]<dstMin)
             {
                 dst = j;
                 dstMin = matrix[curIndex][j];
