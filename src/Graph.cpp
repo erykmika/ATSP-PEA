@@ -106,4 +106,94 @@ void Graph::printGraph() const
     }
 }
 
+double Graph::timeSimulatedAnnealing(double delta, int numOfIterations)
+{
+    int routeElements = size-1;
+    //Route currentRoute(routeElements);
+    //currentRoute.generateRandom();
+    Route currentRoute = generateInitialSolution();
+    std::cout<<currentRoute.toString()<<"\n";
+    int cost = calculateRouteCost(currentRoute);
+    std::cout<<cost<<"\n";
+    double T = 100.0; // Temperatura
+    Route optimalRoute = currentRoute;
+    for(int i=0; i<numOfIterations; i++)
+    {
+        int pos1 = rand()%routeElements;
+        int pos2 = rand()%routeElements;
 
+        Route newRoute = currentRoute;
+        newRoute.procedure2opt(pos1, pos2);
+
+        if(((rand()%10000)/(float)10000)<std::min(1.0, std::exp(-(calculateRouteCost(newRoute)-calculateRouteCost(currentRoute))/T)))
+        {
+            currentRoute = newRoute;
+            if(calculateRouteCost(currentRoute)<calculateRouteCost(optimalRoute))
+            {
+                optimalRoute = currentRoute;
+            }
+        }
+        T *= delta;
+    }
+    std::cout<<"K = "<<calculateRouteCost(optimalRoute)<<"\n";
+    return 0.0;
+}
+
+int Graph::calculateRouteCost(Route& r) const
+{
+    int cost = matrix[0][r[0]];
+    for(int i=1; i<size-1; i++)
+    {
+        cost += matrix[r[i-1]][r[i]];
+    }
+    cost += matrix[r[size-2]][0];
+    return cost;
+}
+
+// Metoda sluzaca do zachlannego wygenerowania poczatkowego rozwiazania
+Route Graph::generateInitialSolution() const
+{
+    Route res(size-1);
+    int sum = 0;
+    // Odwiedzone wierzcholki - dodajemy korzen (0)
+    std::vector<int> visited = {};
+    visited.push_back(0);
+
+    // Bedziemy mieli N-1 krawedzi (poza ostatnia - z powrotem do korzenia)
+    for(int i=0; i<size-1; i++)
+    {
+        /*
+            Dla ostatniego wierzcholka w tablicy znajdujemy inny nieodwiedzony wierzcholek z minimalna wartoscia
+            dlugosci krawedzi miedzy tymi wierzcholkami.
+        */
+        int dst = 0;
+        int dstMin = INT_MAX;
+        int curIndex = visited.back();
+        for(int j=0; j<size; j++)
+        {
+            // Zamiast std::find
+            bool isInVisited = false;
+            for(unsigned k=0; k < visited.size(); k++)
+            {
+                if(visited[k]==j) {
+                    isInVisited = true;
+                    break;
+                }
+            }
+
+            if(!isInVisited && matrix[curIndex][j]<dstMin)
+            {
+                dst = j;
+                dstMin = matrix[curIndex][j];
+            }
+
+        }
+        // Dodajemy "minimalny" wierzcholek do odwiedzonych, powiekszamy koszt
+        visited.push_back(dst);
+        res[i] = dst;
+    }
+    // Na koncu wracamy do korzenia
+    sum += matrix[visited.back()][0];
+
+    return res;
+}

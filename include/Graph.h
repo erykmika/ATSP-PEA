@@ -9,6 +9,9 @@
 #include <random>
 #include <chrono>
 #include <vector>
+#include <math.h>
+
+#include "Route.h"
 
 #define TIME_LIMIT 300000  // 5 min = 300 000 ms = Maksymalny czas wykonywania algorytmu
 
@@ -28,7 +31,10 @@ class Graph
         /*
             Metody rozwiazujace problem ATSP
         */
+        double timeSimulatedAnnealing(double delta, int numOfIterations=2000000);
 
+        int calculateRouteCost(Route& r) const;
+        Route generateInitialSolution() const;
     private:
         // Rozmiar macierzy/problemu ATSP
         int size;
