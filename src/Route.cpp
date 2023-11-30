@@ -32,6 +32,7 @@ std::string Route::toString()
 Route& Route::operator=(const Route& sec)
 {
     route = sec.route;
+    return *this;
 }
 
 int& Route::operator[](unsigned i)
@@ -41,5 +42,34 @@ int& Route::operator[](unsigned i)
 
 void Route::procedure2opt(unsigned i, unsigned j)
 {
-    std::swap(route[i], route[j]);
+    swap(i, j);
+}
+
+void Route::procedureInverse(unsigned i, unsigned j)
+{
+    if(i > j) std::swap(i, j);
+    while(i < j) swap(i++, j--);
+
+}
+
+void Route::procedureInsert(unsigned i, unsigned j)
+{
+    if(i > j) std::swap(i, j);
+
+    int insertedElement = route[i];
+
+    while(i < j-1)
+    {
+        swap(route[i+1], route[i]);
+        i++;
+    }
+
+    route[j-1] = insertedElement;
+}
+
+void Route::swap(unsigned i, unsigned j)
+{
+    int temp = route[i];
+    route[i] = route[j];
+    route[j] = temp;
 }

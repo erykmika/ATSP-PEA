@@ -112,9 +112,9 @@ double Graph::timeSimulatedAnnealing(double delta, int numOfIterations)
     //Route currentRoute(routeElements);
     //currentRoute.generateRandom();
     Route currentRoute = generateInitialSolution();
-    std::cout<<currentRoute.toString()<<"\n";
-    int cost = calculateRouteCost(currentRoute);
-    std::cout<<cost<<"\n";
+    //std::cout<<currentRoute.toString()<<"\n";
+    //int cost = calculateRouteCost(currentRoute);
+    //std::cout<<cost<<"\n";
     double T = 100.0; // Temperatura
     Route optimalRoute = currentRoute;
     for(int i=0; i<numOfIterations; i++)
@@ -136,7 +136,59 @@ double Graph::timeSimulatedAnnealing(double delta, int numOfIterations)
         T *= delta;
     }
     std::cout<<"K = "<<calculateRouteCost(optimalRoute)<<"\n";
+    std::cout<<"0 "<<optimalRoute.toString()<<"0 \n";
     return 0.0;
+}
+
+double Graph::timeTabuSearch(char neighbourFunction, int numOfIterations)
+{
+    void (Route::*movePtr)(unsigned, unsigned);
+
+    switch(neighbourFunction)
+    {
+    case 'n':
+        movePtr = &Route::procedureInsert;
+        break;
+    case 'i':
+        movePtr = &Route::procedureInverse;
+        break;
+    default:
+        movePtr = &Route::procedure2opt;
+        break;
+    }
+
+    int routeElements = size-1;
+    Route currentRoute = generateInitialSolution();
+    Route optimalRoute = currentRoute;
+
+    for(int it=0; it<numOfIterations; it++)
+    {
+        Route currentMax;
+        int currentMaxVal = INT_MIN;
+
+        // Wszystkie podzbiory 2-elementowe (i, j) - sasiedztwo obecnego rozwiazania
+        for(int i=0; i<routeElements; i++)
+        {
+            for(int j=i+1; j<routeElements; j++)
+            {
+                Route current = currentRoute;
+                (current.*movePtr)(i, j);
+                if(calculateRouteCost(currentRoute) - calculateRouteCost(current) > currentMaxVal)
+                {
+                    currentMaxVal = calculateRouteCost(currentRoute) - calculateRouteCost(current);
+                    currentMax = current;
+                }
+            }
+        }
+        currentRoute = currentMax;
+
+        if(calculateRouteCost(currentRoute) < calculateRouteCost(optimalRoute))
+        {
+            optimalRoute = currentRoute;
+        }
+    }
+    std::cout<<"K = "<<calculateRouteCost(optimalRoute)<<"\n";
+    std::cout<<"0 "<<optimalRoute.toString()<<"0 \n";
 }
 
 int Graph::calculateRouteCost(Route& r) const
@@ -175,7 +227,8 @@ Route Graph::generateInitialSolution() const
             bool isInVisited = false;
             for(unsigned k=0; k < visited.size(); k++)
             {
-                if(visited[k]==j) {
+                if(visited[k]==j)
+                {
                     isInVisited = true;
                     break;
                 }

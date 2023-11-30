@@ -15,10 +15,13 @@ int main()
 {
     // Inicjalizujemy generator liczb pseudolosowych za pomoca wartosci czasu pobranego z systemu
     srand(time(NULL));
-    //Route r(5);
-    //r.generateRandom();
-    //std::cout<<r.toString()<<"\n";
-
+    /*
+    Route r(6);
+    r.generateRandom();
+    std::cout<<r.toString()<<"\n";
+    r.procedure2opt(0, 5);
+    std::cout<<r.toString()<<"\n";
+    */
     //Graph t("br17.atsp");
     //t.printGraph();
     //t.timeSimulatedAnnealing();
@@ -41,10 +44,12 @@ int main()
     {
         char choice;
 
+        std::cout<<"0. Wyjscie\n";
         std::cout<<"1. Wczytaj dane z pliku\n";
         std::cout<<"2. Wprowadz kryterium stopu (sekundy)\n";
         std::cout<<"3. Ustaw wspolczynnik zmiany temperatury\n";
         std::cout<<"4. Uruchom algorytm SA dla wczytanych danych i parametrow\n";
+        std::cout<<"5. Uruchom algorytm TS dla wczytanych danych i parametrow\n";
         std::cout<<"------------------------------------------------------------------------------------\n";
         std::cout<<"Wybierz numer opcji: \n";
 
@@ -52,6 +57,9 @@ int main()
 
         switch(choice)
         {
+        case '0':
+            isFinished = true;
+            break;
         case '1':
             try
             {
@@ -77,6 +85,9 @@ int main()
             break;
         case '4':
             g.timeSimulatedAnnealing(delta);
+            break;
+        case '5':
+            g.timeTabuSearch('s');
             break;
         default:
             std::cout<<"Jeszcze niezaimplementowane.\n";

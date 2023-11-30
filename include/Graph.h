@@ -32,6 +32,7 @@ class Graph
             Metody rozwiazujace problem ATSP
         */
         double timeSimulatedAnnealing(double delta, int numOfIterations=2000000);
+        double timeTabuSearch(char neighbourFunction, int numOfIterations=300000);
 
         int calculateRouteCost(Route& r) const;
         Route generateInitialSolution() const;

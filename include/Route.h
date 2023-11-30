@@ -15,8 +15,11 @@ class Route
         Route& operator=(const Route& sec);
         int& operator[](unsigned i);
         void procedure2opt(unsigned i, unsigned j);
+        void procedureInverse(unsigned i, unsigned j);
+        void procedureInsert(unsigned i, unsigned j);
     private:
         std::vector<int> route;
+        void swap(unsigned i, unsigned j);
 };
 
 #endif // ROUTE_H
