@@ -13,10 +13,8 @@ Route::Route(int n)
     np. 0-1-2-3-0
     trasa reprezentowana jako 1-2-3
 */
-void Route::generateRandom()
+void Route::randomize()
 {
-    for(unsigned i=1; i<=route.size(); i++)
-        route[i-1] = i;
     // !!!
     std::random_shuffle(route.begin(), route.end());
 }
@@ -40,9 +38,19 @@ int& Route::operator[](unsigned i)
     return route[i];
 }
 
-void Route::procedure2opt(unsigned i, unsigned j)
+bool Route::operator==(const Route& sec)
+{
+    return route==sec.route;
+}
+
+void Route::procedureSwap(unsigned i, unsigned j)
 {
     swap(i, j);
+}
+
+unsigned Route::getSize()
+{
+    return route.size();
 }
 
 void Route::procedureInverse(unsigned i, unsigned j)
@@ -60,7 +68,7 @@ void Route::procedureInsert(unsigned i, unsigned j)
 
     while(i < j-1)
     {
-        swap(route[i+1], route[i]);
+        std::swap(route[i+1], route[i]);
         i++;
     }
 

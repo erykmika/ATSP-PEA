@@ -17,29 +17,48 @@ int main()
     srand(time(NULL));
     /*
     Route r(6);
-    r.generateRandom();
+    r.randomize();
     std::cout<<r.toString()<<"\n";
-    r.procedure2opt(0, 5);
+    r.procedureSwap(0, 5);
     std::cout<<r.toString()<<"\n";
     */
     //Graph t("br17.atsp");
     //t.printGraph();
-    //t.timeSimulatedAnnealing();
-
+    //t.solveSimulatedAnnealing();
+    /*
+    Graph a(4);
+    Route b = a.generateInitialSolution();
+    a.printGraph();
+    std::cout<<b.toString()<<"\n";
+    std::cout<<a.calculateRouteCost(b)<<"\n";
+    */
     // Graf, ktory jest wykorzystywany w poszczegolnych opcjach
     Graph g;
 
     bool isFinished = false;
 
     // Kryterium stopu - sekundy
-    int seconds = 120;
+    int seconds = 10;
     // Wspolczynnik zmiany temperatury dla SA
-    double delta = 0.95;
+    double delta = 0.99999;
+
+    char n = 's';
 
     /*
         Menu programu zgodne z wytycznymi
     */
 
+    /*
+    SA
+    ftv47.atsp 0.99999
+    rbg403.atsp 0.95
+    */
+
+    /*
+    TS
+    ftv47.atsp
+
+    */
     while(!isFinished)
     {
         char choice;
@@ -48,8 +67,9 @@ int main()
         std::cout<<"1. Wczytaj dane z pliku\n";
         std::cout<<"2. Wprowadz kryterium stopu (sekundy)\n";
         std::cout<<"3. Ustaw wspolczynnik zmiany temperatury\n";
-        std::cout<<"4. Uruchom algorytm SA dla wczytanych danych i parametrow\n";
-        std::cout<<"5. Uruchom algorytm TS dla wczytanych danych i parametrow\n";
+        std::cout<<"4. Wybierz sasiedztwo dla TS\n";
+        std::cout<<"5. Uruchom algorytm SA (symulowane wyzarzanie) dla wczytanych danych i parametrow\n";
+        std::cout<<"6. Uruchom algorytm TS (tabu search) dla wczytanych danych i parametrow\n";
         std::cout<<"------------------------------------------------------------------------------------\n";
         std::cout<<"Wybierz numer opcji: \n";
 
@@ -58,9 +78,12 @@ int main()
         switch(choice)
         {
         case '0':
+        {
             isFinished = true;
             break;
+        }
         case '1':
+        {
             try
             {
                 std::string fname;
@@ -73,25 +96,54 @@ int main()
                 std::cout<<ex<<"\n";
             }
             break;
+        }
         case '2':
+        {
             std::cout<<"Podaj kryterium stopu (sekundy): ";
             std::cin>>seconds;
             std::cout<<"Ustalono kryterium stopu na "<<seconds<<" sek.\n";
             break;
+        }
         case '3':
+        {
             std::cout<<"Podaj wspolczynnik zmiany temperatury alfa < 1.0: ";
             std::cin>>delta;
             std::cout<<"Ustalono wspolczynnik zmiany temperatury na "<<delta<<".\n";
             break;
+        }
         case '4':
-            g.timeSimulatedAnnealing(delta);
+        {
+            std::cout<<"Wybierz sasiedztwo: s - swap, n - insert, i - inverse: ";
+            std::cin>>n;
             break;
+        }
         case '5':
-            g.timeTabuSearch('s');
+        {
+            int repeats = 0;
+            unsigned bestResult = UINT_MAX;
+            std::cout<<"Podaj ilosc powtorzen: ";
+            std::cin>>repeats;
+            for(int i=0; i<repeats; i++)
+                bestResult = std::min(g.solveSimulatedAnnealing(delta, seconds*1000), bestResult);
+            std::cout<<"Najlepsze rozwiazanie metoda SA: "<<bestResult<<".\n";
             break;
+        }
+        case '6':
+        {
+            int repeats = 0;
+            unsigned bestResult = UINT_MAX;
+            std::cout<<"Podaj ilosc powtorzen: ";
+            std::cin>>repeats;
+            for(int i=0; i<repeats; i++)
+                bestResult = std::min(g.solveTabuSearch(n, seconds*1000), bestResult);
+            std::cout<<"Najlepsze rozwiazanie metoda SA: "<<bestResult<<".\n";
+            break;
+        }
         default:
+        {
             std::cout<<"Jeszcze niezaimplementowane.\n";
             break;
+        }
         }
     }
     return 0;
