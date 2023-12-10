@@ -43,16 +43,18 @@ bool Route::operator==(const Route& sec)
     return route==sec.route;
 }
 
-void Route::procedureSwap(unsigned i, unsigned j)
-{
-    swap(i, j);
-}
-
 unsigned Route::getSize()
 {
     return route.size();
 }
 
+// Metoda wykonujaca operacje zamiany miejscami dwoch wierzcholkow na trasie.
+void Route::procedureSwap(unsigned i, unsigned j)
+{
+    swap(i, j);
+}
+
+// Operator inverse - iteracyjne odwracanie kolejnosci elementow
 void Route::procedureInverse(unsigned i, unsigned j)
 {
     if(i > j) std::swap(i, j);
@@ -60,12 +62,14 @@ void Route::procedureInverse(unsigned i, unsigned j)
 
 }
 
+// Wstawianie elementu na trasie miedzy dwoma indeksami
 void Route::procedureInsert(unsigned i, unsigned j)
 {
     if(i > j) std::swap(i, j);
 
     int insertedElement = route[i];
 
+    // Iteracyjne przesuwanie elementow miedzy i a j-1 w prawo.
     while(i < j-1)
     {
         std::swap(route[i+1], route[i]);
@@ -75,6 +79,7 @@ void Route::procedureInsert(unsigned i, unsigned j)
     route[j-1] = insertedElement;
 }
 
+// Metoda pomocnicza - zamiana elementow trasy o indeksach i i j
 void Route::swap(unsigned i, unsigned j)
 {
     int temp = route[i];

@@ -15,23 +15,7 @@ int main()
 {
     // Inicjalizujemy generator liczb pseudolosowych za pomoca wartosci czasu pobranego z systemu
     srand(time(NULL));
-    /*
-    Route r(6);
-    r.randomize();
-    std::cout<<r.toString()<<"\n";
-    r.procedureSwap(0, 5);
-    std::cout<<r.toString()<<"\n";
-    */
-    //Graph t("br17.atsp");
-    //t.printGraph();
-    //t.solveSimulatedAnnealing();
-    /*
-    Graph a(4);
-    Route b = a.generateInitialSolution();
-    a.printGraph();
-    std::cout<<b.toString()<<"\n";
-    std::cout<<a.calculateRouteCost(b)<<"\n";
-    */
+
     // Graf, ktory jest wykorzystywany w poszczegolnych opcjach
     Graph g;
 
@@ -40,8 +24,8 @@ int main()
     // Kryterium stopu - sekundy
     int seconds = 10;
     // Wspolczynnik zmiany temperatury dla SA
-    double delta = 0.99999;
-
+    double delta = 0.9999995;
+    // Sasiedztwo dla TS
     char n = 's';
 
     /*

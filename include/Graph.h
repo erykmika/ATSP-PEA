@@ -14,6 +14,7 @@
 #include <cmath>
 #include <utility>
 
+// Klasa reprezentujaca sciezke
 #include "Route.h"
 
 // Klasa reprezentujaca graf, na ktorym badamy algorytmy rozwiazujace problem ATSP
@@ -38,14 +39,11 @@ class Graph
             Metody pomocniczne wykorzystywane w algorytmie SA
         */
         double generateInitialTemp();
-        double getEdgeWeightAAD();
-        double getAverageEdgeWeight();
 
         // Obliczanie kosztu sciezki dla grafu
         int calculateRouteCost(Route& r) const;
         // Generowanie rozwiazania zachlannie
         Route generateInitialSolution() const;
-        double calculateTemperature() const;
     private:
         // Rozmiar macierzy/problemu ATSP
         int size;
