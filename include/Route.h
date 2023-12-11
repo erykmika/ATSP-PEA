@@ -6,6 +6,7 @@
 #include <string>
 
 
+// Klasa reprezentujaca trase komiwojazera
 class Route
 {
     public:

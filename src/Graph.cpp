@@ -37,6 +37,7 @@ Graph::Graph(int N)
 */
 Graph::Graph(std::string fname)
 {
+    try{
     std::fstream file(fname, std::ios::in);
 
     if(!file.good())
@@ -76,7 +77,9 @@ Graph::Graph(std::string fname)
     }
 
     file.close();
-
+    } catch(...) {
+        throw std::string("Wystapil blad podczas otwierania pliku!\n");
+    }
 }
 
 /*
@@ -107,12 +110,13 @@ void Graph::printGraph() const
     }
 }
 
+// Wyznaczanie poczatkowej temperatury dla algorytmu SA
 double Graph::generateInitialTemp()
 {
     double numOfEdges = size * (size - 1);
 
     int sum = 0;
-
+    // Obliczenie sredniej dlugosci krawedzi w grafie
     for (int i=0; i < size; i++)
     {
         for (int j=0; j < size; j++)
@@ -126,7 +130,7 @@ double Graph::generateInitialTemp()
 
     double avg = sum / numOfEdges;
     double diffSum = 0.0;
-
+    // Obliczanie odchylenia przecietnego
     for (int i=0; i < size; i++)
     {
         for (int j=0; j < size; j++)
@@ -137,16 +141,19 @@ double Graph::generateInitialTemp()
             }
         }
     }
+    // Przyjeto pomnozenie przez stala 10e+5
     return 100000 * (diffSum / numOfEdges);
 }
 
 unsigned Graph::solveSimulatedAnnealing(double delta, int timeLimit)
 {
     // Inicjalizacja zmiennych czasu i trasy
-    std::chrono::duration<double, std::milli> duration1;
-    int routeElements = size - 1;
-    std::chrono::duration<double, std::milli> duration;
 
+    int routeElements = size - 1;
+    // Czas w ktorym znaleziono najlepsze rozwiazanie
+    std::chrono::duration<double, std::milli> duration;
+    // Czas przerwania algorytmu
+    std::chrono::duration<double, std::milli> duration1;
     // Rozpoczecie pomiaru czasu - wygenerowania rozwiazania zachlannego
     auto start = std::chrono::steady_clock::now();
 
@@ -159,7 +166,6 @@ unsigned Graph::solveSimulatedAnnealing(double delta, int timeLimit)
 
     // Obliczenie temp. poczatkowej w oparciu o przetwarzane dane
     double T = generateInitialTemp();
-    //std::cout << "Temp poczatkowa: " << T << "\n";
 
     // Inicjalizacja trasy optymalnej
     Route optimalRoute = currentRoute;
@@ -168,8 +174,8 @@ unsigned Graph::solveSimulatedAnnealing(double delta, int timeLimit)
     // Zmienna kontrolujaca czas
     unsigned timeCheck = 0;
 
-    // Glówna petla algorytmu
-    while(true /*&& T>=1e-30*/)
+    // Glowna petla algorytmu
+    while(true)
     {
         // Losowanie dwoch roznych pozycji w trasie
         int pos1 = rand() % routeElements;
@@ -192,7 +198,7 @@ unsigned Graph::solveSimulatedAnnealing(double delta, int timeLimit)
         {
             currentRoute = newRoute;
         }
-        else if(((double)rand()/(double)RAND_MAX)<=exp(-(double)costDiff/T))
+        else if( ( (double)rand() / (double)RAND_MAX ) <= exp( -(double)costDiff/T ) )
         {
             currentRoute = newRoute;
             currentCost = newCost;
@@ -203,8 +209,7 @@ unsigned Graph::solveSimulatedAnnealing(double delta, int timeLimit)
         {
             optimalRoute = currentRoute;
             optimalCost = currentCost;
-            //std::cout<<optimalCost<<"\n";
-            //std::cout<<T<<"\n";
+            std::cout<<optimalCost<<"\n";
             // Aktualizacja czasu
             auto end = std::chrono::steady_clock::now();
             duration = end - start;
@@ -229,7 +234,7 @@ unsigned Graph::solveSimulatedAnnealing(double delta, int timeLimit)
     double elapsed_time = duration.count();
     std::cout << elapsed_time << "; ";
     std::cout << optimalCost << ";";
-    std::cout<<optimalRoute.toString()<<";"<<T<<"\n";
+    std::cout << optimalRoute.toString() << ";" << T << "\n";
 
     // Zwrocenie optymalnego kosztu
     return optimalCost;
@@ -238,9 +243,12 @@ unsigned Graph::solveSimulatedAnnealing(double delta, int timeLimit)
 
 unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
 {
+    // Wskaznik na metode ruchu/sasiedztwa
     void (Route::*movePtr)(unsigned, unsigned);
+    // Rozmiar listy tabu
     unsigned tabuListSize = size;
-
+    // Lista elementow trasy
+    int routeElements = size-1;
     // Wybor definicji sasiedztwa
     switch(neighbourFunction)
     {
@@ -254,22 +262,29 @@ unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
         movePtr = &Route::procedureSwap;
         break;
     }
-    //std::cout<<(std::sqrt(size*size*size))<<"\n";
-    int criticalBound = 100000/size;
-    //std::cout<<"Critical bound: "<<criticalBound<<"\n";
 
-    int routeElements = size-1;
+    // Licznik krytyczny (dywersyfikacji)
+    int criticalBound = 100000/size;
+    // Pomiar czasu - generowania rozwiazania zachlannego
     auto start = std::chrono::steady_clock::now();
     Route currentRoute = generateInitialSolution();
     auto end = std::chrono::steady_clock::now();
+
     Route optimalRoute = currentRoute;
     int optimalCost = calculateRouteCost(optimalRoute);
+
     std::vector<std::pair<int, int>>tabuList;
+
     int criticalCounter = 0;
+
+    // Czas w ktorym znaleziono najlepsze rozwiazanie
     std::chrono::duration<double, std::milli> duration;
+    // Czas przerwania algorytmu
     std::chrono::duration<double, std::milli> duration1;
 
+    // Element tabu nr 1 - indeks i element pod tym indeksem
     std::pair<int,int> currentTabuFirst;
+    // Element tabu nr 2 - indeks i element pod tym indeksem
     std::pair<int,int> currentTabuSecond;
 
     // Zmienna kontrolujaca czas
@@ -278,20 +293,19 @@ unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
     while(true)
     {
         // Dywersyfikacja
-
         if(criticalCounter >= criticalBound)
         {
             currentRoute.randomize();
             criticalCounter = 0;
-            //std::cout<<"Critical!\n";
             tabuList.clear();
         }
 
         int currentCost = calculateRouteCost(currentRoute);
-
+        // Najlepszy sasiad
         Route currentBest = currentRoute;
         int currentMaxVal = INT_MIN;
 
+        // Inicjalizacja tabu
         std::pair<int, int> forbiddenFirst(-1, -1);
         std::pair<int, int> forbiddenSecond(-1, -1);
 
@@ -303,34 +317,13 @@ unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
 
             for(int j=i+1; j<routeElements; j++)
             {
+                // Wykonanie ruchu
                 Route newRoute = currentRoute;
 
                 (newRoute.*movePtr)(i, j);
 
                 int newCost = calculateRouteCost(newRoute);
-                /*
-                // Obecne potencjalne tabu - elementy trasy o indeksach i, j - obie kolejnosci
-                if(neighbourFunction=='s') // 4 powstale krawedzie
-                {
-                    currentTabuFirst = std::pair<int, int>((i-1) >= 0 ? newRoute[i-1] : 0, newRoute[i]);
-                    currentTabuSecond = std::pair<int, int>(newRoute[i], newRoute[i+1]);
-                    currentTabuThird = std::pair<int, int>(newRoute[j-1], newRoute[j]);
-                    currentTabuFourth = std::pair<int, int>(newRoute[j], (j+1) < routeElements ? newRoute[j+1] : 0);
-                }
-                else if (neighbourFunction=='i')
-                {
-                    currentTabuFirst = std::pair<int, int>((j-2) >= 0 ? newRoute[j-2] : 0, newRoute[j-1]);
-                    currentTabuSecond = std::pair<int, int>(newRoute[j-1], newRoute[j]);
-                    currentTabuThird = std::pair<int, int>(newRoute[j], (j+1) < routeElements ? newRoute[j+1] : 0);
-                }
-                else
-                {
-                    currentTabuFirst = std::pair<int, int>((i-1) >= 0 ? newRoute[i-1] : 0, newRoute[i]);
-                    currentTabuSecond = std::pair<int, int>(newRoute[i], newRoute[i+1]);
-                    currentTabuThird = std::pair<int, int>(newRoute[j-1], newRoute[j]);
-                    currentTabuFourth = std::pair<int, int>(newRoute[j], (j+1) < routeElements ? newRoute[j+1] : 0);
-                }
-                */
+
                 currentTabuFirst = std::pair<int, int>(i, newRoute[i]);
                 currentTabuSecond = std::pair<int, int>(j, newRoute[j]);
 
@@ -339,24 +332,21 @@ unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
                 // Sprawdzenie czy obecny ruch jest tabu
                 for(unsigned k=0; k<tabuList.size(); k++)
                 {
-
-                    if(tabuList[k] == currentTabuFirst || tabuList[k] == currentTabuSecond /*||
-                            tabuList[k] == currentTabuThird || tabuList[k] == currentTabuFourth*/)
+                    // Sprawdzenie czy ruch jest tabu
+                    if( tabuList[k] == currentTabuFirst || tabuList[k] == currentTabuSecond )
                     {
                         isTabu = true;
                         break;
                     }
                 }
 
-                // Czy nie jest tabu i jest nowym lokalnym najlepszym rozwiazaniem lub kryterium aspiracji
-                if(( !isTabu && (currentCost - newCost > currentMaxVal))|| newCost < optimalCost)
+                // Czy nie jest tabu i jest nowym lokalnym najlepszym rozwiazaniem lub spelnione jest kryterium aspiracji
+                if(( !isTabu && ( currentCost - newCost > currentMaxVal ))|| newCost < optimalCost )
                 {
                     currentMaxVal = currentCost - newCost;
                     currentBest = newRoute;
                     forbiddenFirst = currentTabuFirst;
                     forbiddenSecond = currentTabuSecond;
-                    //forbiddenThird = currentTabuThird;
-                    //forbiddenFourth = currentTabuFourth;
                     newTabu = true;
                 }
             }
@@ -367,19 +357,19 @@ unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
         {
             tabuList.push_back(forbiddenFirst);
             tabuList.push_back(forbiddenSecond);
-            //tabuList.push_back(forbiddenThird);
-            //tabuList.push_back(forbiddenFourth);
         }
 
-        // Zapewnienie ograniczonej liczby elementow na liscie tabu
+        // Zapewnienie stalej dlugosci listy tabu
         while(tabuList.size() > tabuListSize)
         {
             tabuList.erase(tabuList.begin());
         }
 
+        // Zamiana trasy po wykonanym ruchu
         currentRoute = currentBest;
         currentCost = calculateRouteCost(currentRoute);
 
+        // Czy jest nowe najlepsze rozwiazanie
         if(currentCost < optimalCost)
         {
             end = std::chrono::steady_clock::now();
@@ -387,8 +377,8 @@ unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
             if(duration.count()>timeLimit) break;
             optimalRoute = currentRoute;
             optimalCost = currentCost;
+            std::cout<<optimalCost<<"\n";
             criticalCounter = 0;
-            //std::cout<<optimalCost<<"\n";
         }
 
         // Sprawdzenie czasu i przerwanie petli, jesli przekroczony limit czasu
@@ -404,14 +394,17 @@ unsigned Graph::solveTabuSearch(char neighbourFunction, int timeLimit)
         criticalCounter++;
     }
 
+    // Zakonczenie pomiaru calkowitego czasu i wypisanie wyników
     duration = end - start;
     double elapsed_time = duration.count();
     std::cout << elapsed_time << "; ";
     std::cout << optimalCost << ";";
-    std::cout<<optimalRoute.toString()<<";\n";
+    std::cout << optimalRoute.toString() << ";\n";
+    // Zwrocenie optymalnego kosztu
     return optimalCost;
 }
 
+// Obliczanie kosztu sciezki
 int Graph::calculateRouteCost(Route& r) const
 {
     int cost = matrix[0][r[0]];

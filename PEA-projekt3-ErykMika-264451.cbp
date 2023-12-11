@@ -25,6 +25,7 @@
 		</Compiler>
 		<Linker>
 			<Add option="-O3" />
+			<Add option="-static" />
 		</Linker>
 		<Unit filename="include/Graph.h" />
 		<Unit filename="include/Route.h" />

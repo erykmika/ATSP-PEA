@@ -36,7 +36,7 @@ class Graph
         unsigned solveSimulatedAnnealing(double delta, int timeLimit);
         unsigned solveTabuSearch(char neighbourFunction, int timeLimit);
         /*
-            Metody pomocniczne wykorzystywane w algorytmie SA
+            Metoda pomocniczna wykorzystywana w algorytmie SA
         */
         double generateInitialTemp();
 

@@ -28,21 +28,6 @@ int main()
     // Sasiedztwo dla TS
     char n = 's';
 
-    /*
-        Menu programu zgodne z wytycznymi
-    */
-
-    /*
-    SA
-    ftv47.atsp 0.99999
-    rbg403.atsp 0.95
-    */
-
-    /*
-    TS
-    ftv47.atsp
-
-    */
     while(!isFinished)
     {
         char choice;
@@ -120,7 +105,7 @@ int main()
             std::cin>>repeats;
             for(int i=0; i<repeats; i++)
                 bestResult = std::min(g.solveTabuSearch(n, seconds*1000), bestResult);
-            std::cout<<"Najlepsze rozwiazanie metoda SA: "<<bestResult<<".\n";
+            std::cout<<"Najlepsze rozwiazanie metoda TS: "<<bestResult<<".\n";
             break;
         }
         default:

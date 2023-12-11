@@ -1,6 +1,6 @@
 #include "Route.h"
 
-Route::Route():Route(5){}
+Route::Route():Route(5) {}
 
 Route::Route(int n)
 {
@@ -9,13 +9,12 @@ Route::Route(int n)
 
 /*
     Metoda dla danego n generuje losowy ciag liczb ze zbioru {1,...,n}.
-    Jest to permutacja - trasa komiwoja¿era bez pierwszego i ostatniego przystanku na trasie (0).
+    Jest to permutacja - trasa komiwojazera bez pierwszego i ostatniego przystanku na trasie (0).
     np. 0-1-2-3-0
     trasa reprezentowana jako 1-2-3
 */
 void Route::randomize()
 {
-    // !!!
     std::random_shuffle(route.begin(), route.end());
 }
 
@@ -57,7 +56,13 @@ void Route::procedureSwap(unsigned i, unsigned j)
 // Operator inverse - iteracyjne odwracanie kolejnosci elementow
 void Route::procedureInverse(unsigned i, unsigned j)
 {
-    if(i > j) std::swap(i, j);
+    if(i > j)
+    {
+        int temp = i;
+        i = j;
+        j = temp;
+    }
+
     while(i < j) swap(i++, j--);
 
 }
@@ -65,14 +70,19 @@ void Route::procedureInverse(unsigned i, unsigned j)
 // Wstawianie elementu na trasie miedzy dwoma indeksami
 void Route::procedureInsert(unsigned i, unsigned j)
 {
-    if(i > j) std::swap(i, j);
+    if(i > j)
+    {
+        int temp = i;
+        i = j;
+        j = temp;
+    }
 
     int insertedElement = route[i];
 
     // Iteracyjne przesuwanie elementow miedzy i a j-1 w prawo.
     while(i < j-1)
     {
-        std::swap(route[i+1], route[i]);
+        swap(i+1, i);
         i++;
     }
 
