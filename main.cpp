@@ -15,16 +15,18 @@ int main()
 {
     // Inicjalizujemy generator liczb pseudolosowych za pomoca wartosci czasu pobranego z systemu
     srand(time(NULL));
+
     /*
     Route r(5);
     std::cout<<r.toString()<<"\n";
     r.mutateScramble(3);
     std::cout<<r.toString()<<"\n";
     */
-    Route a(std::vector<int>{1, 4, 2, 8, 5, 7, 3, 6, 9});
-    Route b(std::vector<int>{7, 5, 3, 1, 9, 8, 6, 4, 2});
-    std::cout<<a.crossoverPMX(b).toString()<<"\n";
-    std::cout<<b.crossoverPMX(a).toString()<<"\n";
+
+    //Route a(std::vector<int> {10, 9, 6,  5, 3, 7, 8,  1,4, 2});
+    //Route b(std::vector<int> {10, 5, 3, 7, 4, 1, 8,  2, 6, 9});
+    //std::cout<<a.crossoverPMX(b).toString()<<"\n";
+    //std::cout<<b.crossoverPMX(a).toString()<<"\n";
     // Graf, ktory jest wykorzystywany w poszczegolnych opcjach
     Graph g;
 
@@ -32,6 +34,14 @@ int main()
 
     // Kryterium stopu - sekundy
     int seconds = 10;
+    // Wielkosc populacji poczatkowej
+    int initialPopulation = 10;
+    // Wspolczynnik mutacji
+    double mutationFactor = 0.1;
+    // Wspolczynnik krzyzowania
+    double crossoverFactor = 0.2;
+    // Wybor metody mutacji
+    bool mutationOption = true;
 
     while(!isFinished)
     {
@@ -42,8 +52,7 @@ int main()
         std::cout<<"2. Wprowadz kryterium stopu (sekundy)\n";
         std::cout<<"3. Ustawienie wielkosci populacji poczatkowej\n";
         std::cout<<"4. Ustawienie wspolczynnika mutacji\n";
-        std::cout<<"4. Ustawienie wspolczynnika krzyzowania\n";
-        std::cout<<"5. Wybor metody krzyzowania\n";
+        std::cout<<"5. Ustawienie wspolczynnika krzyzowania\n";
         std::cout<<"6. Wybor metody mutacji\n";
         std::cout<<"7. Uruchom algorytm\n";
         std::cout<<"-----------------------------------------------------\n";
@@ -81,6 +90,51 @@ int main()
             std::cout<<"Podaj kryterium stopu (sekundy): ";
             std::cin>>seconds;
             std::cout<<"Ustalono kryterium stopu na "<<seconds<<" sek.\n";
+            break;
+        }
+        case '3':
+        {
+            std::cout<<"Podaj wielkosc populacji poczatkowej: ";
+            std::cin>>initialPopulation;
+            std::cout<<"Ustalono wielkosc populacji poczatkowej "<<initialPopulation<<".\n";
+            break;
+        }
+        case '4':
+        {
+            std::cout<<"Podaj wspolczynnik mutacji (0-1): ";
+            std::cin>>mutationFactor;
+            std::cout<<"Ustalono wspolczynnik mutacji na "<<mutationFactor<<"\n";
+            break;
+        }
+        case '5':
+        {
+            std::cout<<"Podaj wspolczynnik krzyzowania (0-1): ";
+            std::cin>>crossoverFactor;
+            std::cout<<"Ustalono wspolczynnik krzyzowania na "<<crossoverFactor<<"\n";
+            break;
+        }
+        case '6':
+        {
+            std::cout<<"Wybierz metode mutacji (0 - inverse, 1 - scramble): ";
+            int mutationChoice = 0;
+            std::cin>>mutationChoice;
+            mutationOption = (bool)mutationChoice;
+            std::string chosenOption = ( (mutationOption) ? "scramble" : "inverse" );
+            std::cout<<"Wybrano "<<chosenOption<<".\n";
+            break;
+        }
+        case '7':
+        {
+            int repeats = 1;
+            double timeSum = 0;
+            std::cout<<"Podaj liczbe powtorzen: ";
+            std::cin>>repeats;
+            for(int i=0; i<repeats; i++)
+            {
+                timeSum += g.solveGA(seconds, initialPopulation, mutationFactor,
+                                     crossoverFactor, mutationOption);
+            }
+            std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
             break;
         }
         default:

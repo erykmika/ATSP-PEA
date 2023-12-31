@@ -157,7 +157,7 @@ Route Route::crossoverPMX(const Route& sec)
         int destIndex = -1;
 
         unsigned it = 0;
-        while( it < routeSize) {
+        while( it < routeSize ) {
             // Czy wewnatrz skopiowanego fragmentu
             bool withinCopiedSegment = ( it >= a && it <= b );
             if( sec.route[it] == j && withinCopiedSegment )
