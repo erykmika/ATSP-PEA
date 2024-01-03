@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include <time.h>
+#include <math.h>
 
 #include "Graph.h"
 #include "Route.h"
@@ -33,15 +34,17 @@ int main()
     bool isFinished = false;
 
     // Kryterium stopu - sekundy
-    int seconds = 10;
+    int seconds = 120;
     // Wielkosc populacji poczatkowej
-    int initialPopulation = 10;
+    int initialPopulation = 1e4;
     // Wspolczynnik mutacji
-    double mutationFactor = 0.1;
+    double mutationFactor = 0.01;
     // Wspolczynnik krzyzowania
-    double crossoverFactor = 0.2;
+    double crossoverFactor = 0.8;
     // Wybor metody mutacji
     bool mutationOption = true;
+
+    //g.printGraph();
 
     while(!isFinished)
     {
@@ -75,8 +78,8 @@ int main()
                 std::cout<<"Podaj nazwe pliku z rozszerzeniem: ";
                 std::cin>>fname;
                 g = Graph(fname);
-                std::cout<<"\n";
-                g.printGraph();
+                //std::cout<<"\n";
+                //g.printGraph();
                 std::cout<<"\n";
             }
             catch(std::string& ex)
@@ -131,10 +134,10 @@ int main()
             std::cin>>repeats;
             for(int i=0; i<repeats; i++)
             {
-                timeSum += g.solveGA(seconds, initialPopulation, mutationFactor,
+                timeSum += g.solveGA(seconds*1000, initialPopulation, mutationFactor,
                                      crossoverFactor, mutationOption);
             }
-            std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
+            //std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
             break;
         }
         default:

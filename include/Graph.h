@@ -32,7 +32,9 @@ class Graph
         double solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
                        double crossoverFactor, bool mutationChoice) const;
         // Obliczanie kosztu sciezki dla grafu
-        int calculateRouteCost(Route& r) const;
+        void calculateRouteCost(Route& r) const;
+
+        Route generateInitialSolution() const;
     private:
         // Rozmiar macierzy/problemu ATSP
         int size;

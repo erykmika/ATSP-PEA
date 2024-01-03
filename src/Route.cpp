@@ -16,6 +16,12 @@ Route::Route(const std::vector<int>& r) {
     route = r;
 }
 
+// Konstruktor kopiujacy
+Route::Route(const Route& sec) {
+    this->cost = sec.cost;
+    this->route = sec.route;
+}
+
 /*
     Metoda dla danego n generuje losowy ciag liczb ze zbioru {1,...,n}.
     Jest to permutacja - trasa komiwojazera bez pierwszego i ostatniego przystanku na trasie (0).
@@ -37,7 +43,8 @@ std::string Route::toString() const
 
 Route& Route::operator=(const Route& sec)
 {
-    route = sec.route;
+    this->route = sec.route;
+    this->cost = sec.cost;
     return *this;
 }
 
@@ -56,13 +63,13 @@ unsigned Route::getSize() const
     return route.size();
 }
 
-/*
+
 // Metoda wykonujaca operacje zamiany miejscami dwoch wierzcholkow na trasie.
 void Route::procedureSwap(unsigned i, unsigned j)
 {
     swap(i, j);
 }
-*/
+
 
 // Mutacja typu inverse - iteracyjne odwracanie kolejnosci elementow
 void Route::mutateInverse(unsigned i, unsigned j)
@@ -120,10 +127,6 @@ Route Route::crossoverPMX(const Route& sec)
         a = b;
         b = temp;
     }
-
-    //a = 3;
-    //b = 6;
-    std::cout<<"a = "<<a<<" b = "<<b<<"\n";
     // Wynikowy potomek
     Route offspring = sec;
     // Skopiowanie wybranego segmentu z pierwszego rodzica (*this)
@@ -207,4 +210,21 @@ void Route::swap(unsigned i, unsigned j)
     int temp = route[i];
     route[i] = route[j];
     route[j] = temp;
+}
+
+// Getter i setter kosztu sciezki
+unsigned Route::getCost() const
+{
+    return cost;
+}
+
+void Route::setCost(unsigned cost)
+{
+    this->cost = cost;
+}
+
+// Operator < na potrzeby sortowania
+bool Route::operator<(const Route& sec) const
+{
+    return ( this->cost < sec.cost );
 }

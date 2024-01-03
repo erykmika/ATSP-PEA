@@ -7,6 +7,7 @@
 #include <utility>
 #include <iostream>
 
+
 // Klasa reprezentujaca trase komiwojazera - permutacja ciagu 1,..,n
 class Route
 {
@@ -14,6 +15,7 @@ class Route
         Route();
         Route(int n);
         Route(const std::vector<int>& r); // Konstruktor do testow
+        Route(const Route& sec);
         void randomize();
         std::string toString() const;
         unsigned getSize() const;
@@ -29,11 +31,18 @@ class Route
         Route crossoverPMX(const Route& sec);
 
         // obsolete
-        //void procedureSwap(unsigned i, unsigned j);
+        void procedureSwap(unsigned i, unsigned j);
         //void procedureInsert(unsigned i, unsigned j);
+
+        // Koszt sciezki
+        unsigned getCost() const;
+        void setCost(unsigned cost);
+
+        // Operator <
+        bool operator<(const Route& sec) const;
     private:
         std::vector<int> route;
         void swap(unsigned i, unsigned j);
+        unsigned cost;
 };
-
 #endif // ROUTE_H

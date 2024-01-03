@@ -116,18 +116,175 @@ void Graph::printGraph() const
 double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
                       double crossoverFactor, bool mutationChoice) const
 {
-    return 0.0d;
+    // Dynamiczna tablica - wektor - przechowujaca populacje
+    std::vector<Route> population;
+    unsigned routeElements = size - 1;
+    unsigned eliteSize = initialPopulation;
+
+    Route greedy = generateInitialSolution();
+    calculateRouteCost(greedy);
+    population.emplace_back(greedy);
+
+    while( population.size() <(unsigned)(0.05d*initialPopulation) )
+    {
+        // 5% osobnikow w poczatkowej populacji wywodzi sie z rozwiazania zachlannego
+        Route r = greedy;
+        r.procedureSwap( rand()% routeElements, rand() % routeElements );
+        calculateRouteCost(r);
+        population.emplace_back(r);
+    }
+
+    while( population.size() < initialPopulation )
+    {
+        // reszta osobnikow jest losowych
+        Route r(routeElements);
+        r.randomize();
+        calculateRouteCost(r);
+        population.emplace_back(r);
+    }
+
+    std::sort(population.begin(), population.end());
+
+    std::cout<<population[0].getCost()<<"\n";
+
+    unsigned timeCheck = 0;
+
+    std::chrono::duration<double, std::milli> duration;
+    std::chrono::duration<double, std::milli> duration1;
+    unsigned bestSolution = population[0].getCost();
+    auto start = std::chrono::steady_clock::now();
+    auto end = std::chrono::steady_clock::now();
+
+    // Glowna petla algorytmu
+    while(true)
+    {
+        // Rozmiar populacji w obecnej iteracji
+        unsigned populationSize = population.size();
+
+        for(unsigned i=0; i<populationSize; i++)
+        {
+
+            // Mutacja
+            if( (double)rand() / (double)RAND_MAX < mutationFactor )
+            {
+
+                int idx1 = rand() % routeElements;
+                int idx2 = rand() % routeElements;
+                if(idx1 == idx2) idx2 = ( idx1 + 1 ) % routeElements;
+                population[i].mutateInverse(idx1, idx2);
+
+                //population[i].mutateScramble( rand() % (int)routeElements * 0.2 );
+
+                calculateRouteCost(population[i]);
+            }
+
+            // Krzyzowanie
+            if( (double)rand() / (double)RAND_MAX < crossoverFactor )
+            {
+                unsigned secIndex = rand()% populationSize;
+                if(secIndex == i) secIndex = ( secIndex + 1 ) % populationSize;
+                Route offspring = population[i].crossoverPMX( population[secIndex] );
+                calculateRouteCost(offspring);
+                population.emplace_back(offspring);
+            }
+        }
+
+        // Sortowanie populacji rozwiazan
+        std::sort(population.begin(), population.end());
+
+        if( population[0].getCost() < bestSolution )
+        {
+            auto end1 = std::chrono::steady_clock::now();
+            duration1 = end1 - start;
+            if(duration1.count() > timeLimit) break;
+            end = end1;
+            bestSolution = population[0].getCost();
+            std::cout<<bestSolution<<"\n";
+        }
+
+        // Zapewnienie, ze populacja ma okreslony rozmiar - eliteSize najbardziej obiecujacych rozwiazan
+        if( population.size() > initialPopulation )
+        {
+            population.erase( population.begin() + eliteSize, population.end() );
+        }
+
+        // Sprawdzenie warunku stopu
+        if( timeCheck > 10 )
+        {
+            auto end1 = std::chrono::steady_clock::now();
+            duration1 = end1 - start;
+            double elapsed_time1 = duration1.count();
+            if(elapsed_time1 > timeLimit) break;
+            timeCheck = 0;
+        }
+        timeCheck++;
+    }
+
+    // Obliczenie czasu, wyniki
+    duration = end - start;
+    std::cout<<duration.count()<<" ms; ";
+    std::cout<<bestSolution<<"\n";
+    return bestSolution;
 }
 
-// Obliczanie kosztu sciezki
-int Graph::calculateRouteCost(Route& r) const
+// Obliczanie i ustawianie kosztu sciezki
+void Graph::calculateRouteCost(Route& r) const
 {
-    int cost = matrix[0][r[0]];
+    unsigned cost = matrix[0][r[0]];
     for(int i=1; i<size-1; i++)
     {
         cost += matrix[r[i-1]][r[i]];
     }
     cost += matrix[r[size-2]][0];
-    return cost;
+    r.setCost(cost);
+}
+
+// Metoda sluzaca do zachlannego wygenerowania poczatkowego rozwiazania
+Route Graph::generateInitialSolution() const
+{
+    Route res(size-1);
+    int sum = 0;
+    // Odwiedzone wierzcholki - dodajemy korzen (0)
+    std::vector<int> visited = {};
+    visited.push_back(0);
+
+    // Bedziemy mieli N-1 krawedzi (poza ostatnia - z powrotem do korzenia)
+    for(int i=0; i<size-1; i++)
+    {
+        /*
+            Dla ostatniego wierzcholka w tablicy znajdujemy inny nieodwiedzony wierzcholek z minimalna wartoscia
+            dlugosci krawedzi miedzy tymi wierzcholkami.
+        */
+        int dst = 0;
+        int dstMin = INT_MAX;
+        int curIndex = visited.back();
+        for(int j=0; j<size; j++)
+        {
+            // Zamiast std::find
+            bool isInVisited = false;
+            for(unsigned k=0; k < visited.size(); k++)
+            {
+                if(visited[k]==j)
+                {
+                    isInVisited = true;
+                    break;
+                }
+            }
+
+            if(!isInVisited && matrix[curIndex][j]<dstMin)
+            {
+                dst = j;
+                dstMin = matrix[curIndex][j];
+            }
+
+        }
+        // Dodajemy "minimalny" wierzcholek do odwiedzonych, powiekszamy koszt
+        visited.push_back(dst);
+        res[i] = dst;
+    }
+    // Na koncu wracamy do korzenia
+    sum += matrix[visited.back()][0];
+
+    return res;
 }
 
