@@ -2,6 +2,7 @@
 #include <random>
 #include <time.h>
 #include <math.h>
+#include <climits>
 
 #include "Graph.h"
 #include "Route.h"

@@ -119,24 +119,30 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
     // Dynamiczna tablica - wektor - przechowujaca populacje
     std::vector<Route> population;
     unsigned routeElements = size - 1;
-    unsigned eliteSize = initialPopulation;
+    // Do kolejnej iteracji jako rodzice przepuszczane jest 10% liczby osobnikow w poczatkowej populacji
+    unsigned eliteSize = 0.1 * initialPopulation;
 
+    // Rozwiazanie wygenerowane zachlannie
     Route greedy = generateInitialSolution();
     calculateRouteCost(greedy);
     population.emplace_back(greedy);
 
-    while( population.size() <(unsigned)(0.05d*initialPopulation) )
+    /*
+        10% osobnikow w poczatkowej populacji wywodzi sie z rozwiazania zachlannego;
+        razem z bazowym rozwiazaniem wygenerowanym zachlannie
+    */
+    while( population.size() <(unsigned)( 0.1*initialPopulation ) )
     {
-        // 5% osobnikow w poczatkowej populacji wywodzi sie z rozwiazania zachlannego
+
         Route r = greedy;
         r.procedureSwap( rand()% routeElements, rand() % routeElements );
         calculateRouteCost(r);
         population.emplace_back(r);
     }
 
+    // Reszta osobnikow jest wygenerowana losowo
     while( population.size() < initialPopulation )
     {
-        // reszta osobnikow jest losowych
         Route r(routeElements);
         r.randomize();
         calculateRouteCost(r);
@@ -145,9 +151,11 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
 
     std::sort(population.begin(), population.end());
 
-    std::cout<<population[0].getCost()<<"\n";
-
     unsigned timeCheck = 0;
+    // 20% liczby przystankow na trasie
+    unsigned p1 = 0.2 * routeElements;
+    // 10% liczby przystankow na trasie
+    unsigned p2 = 0.1 * routeElements;
 
     std::chrono::duration<double, std::milli> duration;
     std::chrono::duration<double, std::milli> duration1;
@@ -167,14 +175,23 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
             // Mutacja
             if( (double)rand() / (double)RAND_MAX < mutationFactor )
             {
+                // Mutacja typu scramble
+                if( mutationChoice )
+                {
+                    population[i].mutateScramble( rand() % p1 );
+                }
+                // Mutacja typu inverse
+                else
+                {
+                    int idx1 = 0, idx2 = 0;
 
-                int idx1 = rand() % routeElements;
-                int idx2 = rand() % routeElements;
-                if(idx1 == idx2) idx2 = ( idx1 + 1 ) % routeElements;
-                population[i].mutateInverse(idx1, idx2);
-
-                //population[i].mutateScramble( rand() % (int)routeElements * 0.2 );
-
+                    while(idx1==idx2)
+                    {
+                        idx1 = rand() % routeElements;
+                        idx2 = ( idx1 + ( rand()% p2 ) ) % routeElements;
+                    }
+                    population[i].mutateInverse( idx1, idx2 );
+                }
                 calculateRouteCost(population[i]);
             }
 
@@ -199,10 +216,13 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
             if(duration1.count() > timeLimit) break;
             end = end1;
             bestSolution = population[0].getCost();
-            std::cout<<bestSolution<<"\n";
+            //std::cout<<bestSolution<<"\n";
         }
 
-        // Zapewnienie, ze populacja ma okreslony rozmiar - eliteSize najbardziej obiecujacych rozwiazan
+        /*
+         Selekcja rodzicow do nastepnej iteracji
+         Wybierane jest 'eliteSize' najbardziej obiecujacych (najlepszych) rozwiazan
+         */
         if( population.size() > initialPopulation )
         {
             population.erase( population.begin() + eliteSize, population.end() );
