@@ -58,18 +58,11 @@ bool Route::operator==(const Route& sec) const
     return route==sec.route;
 }
 
-unsigned Route::getSize() const
-{
-    return route.size();
-}
-
-
 // Metoda wykonujaca operacje zamiany miejscami dwoch wierzcholkow na trasie.
 void Route::procedureSwap(unsigned i, unsigned j)
 {
     swap(i, j);
 }
-
 
 // Mutacja typu inverse - iteracyjne odwracanie kolejnosci elementow
 void Route::mutateInverse(unsigned i, unsigned j)
@@ -109,7 +102,6 @@ void Route::mutateScramble(unsigned k)
     for(unsigned i=0; i<chosenIndices.size(); i++)
         swap( chosenIndices[i], chosenIndices[ rand() % chosenIndices.size()] );
 }
-
 
 Route Route::crossoverPMX(const Route& sec)
 {
@@ -179,30 +171,6 @@ Route Route::crossoverPMX(const Route& sec)
     }
     return offspring;
 }
-
-/*
-// Wstawianie elementu na trasie miedzy dwoma indeksami
-void Route::procedureInsert(unsigned i, unsigned j)
-{
-    if(i > j)
-    {
-        int temp = i;
-        i = j;
-        j = temp;
-    }
-
-    int insertedElement = route[i];
-
-    // Iteracyjne przesuwanie elementow miedzy i a j-1 w prawo.
-    while(i < j-1)
-    {
-        swap(i+1, i);
-        i++;
-    }
-
-    route[j-1] = insertedElement;
-}
-*/
 
 // Metoda pomocnicza - zamiana elementow trasy o indeksach i i j
 void Route::swap(unsigned i, unsigned j)

@@ -28,7 +28,7 @@ class Graph
         Graph& operator=(const Graph& sec);
         // Wypisywanie grafu/macierzy
         void printGraph() const;
-        // Metoda realizujaca algorytm genetyczny
+        // Metoda realizujaca algorytm genetyczny, zwraca czas, w ktorym znaleziono rozwiazanie
         double solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
                        double crossoverFactor, bool mutationChoice) const;
         // Obliczanie kosztu sciezki dla grafu

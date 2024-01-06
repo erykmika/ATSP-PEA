@@ -42,8 +42,8 @@ int main()
     double mutationFactor = 0.01;
     // Wspolczynnik krzyzowania
     double crossoverFactor = 0.8;
-    // Wybor metody mutacji
-    bool mutationOption = true;
+    // Wybor metody mutacji - domyslnie inverse
+    bool mutationOption = false;
 
     //g.printGraph();
 
@@ -129,16 +129,21 @@ int main()
         }
         case '7':
         {
-            int repeats = 1;
-            double timeSum = 0;
-            std::cout<<"Podaj liczbe powtorzen: ";
-            std::cin>>repeats;
-            for(int i=0; i<repeats; i++)
             {
-                timeSum += g.solveGA(seconds*1000, initialPopulation, mutationFactor,
-                                     crossoverFactor, mutationOption);
+
+
+                int repeats = 1;
+                double timeSum = 0;
+                std::cout<<"Podaj liczbe powtorzen: ";
+                std::cin>>repeats;
+
+                for(int i=0; i<repeats; i++)
+                {
+                    timeSum+=g.solveGA(seconds*1000, initialPopulation, mutationFactor,
+                                       crossoverFactor, mutationOption);
+                }
+                std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
             }
-            //std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
             break;
         }
         default:

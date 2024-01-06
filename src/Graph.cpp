@@ -85,10 +85,7 @@ Graph::Graph(std::string fname)
     }
 }
 
-/*
-    Operator przypisania, uzywany do "zamiany" obiektow w glownym programie
-*/
-
+//Operator przypisania, uzywany do "zamiany" obiektow w glownym programie
 Graph& Graph::operator=(const Graph& sec)
 {
     // Przypisujemy macierz i rozmiar problemu
@@ -113,28 +110,32 @@ void Graph::printGraph() const
     }
 }
 
+// Glowna metoda klasy rozwiazujaca problem TSP za pomoca algorytmu genetycznego - zwraca czas znalezienia najlepszego rozwiazania [ms]
 double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
                       double crossoverFactor, bool mutationChoice) const
 {
     // Dynamiczna tablica - wektor - przechowujaca populacje
     std::vector<Route> population;
     unsigned routeElements = size - 1;
-    // Do kolejnej iteracji jako rodzice przepuszczane jest 10% liczby osobnikow w poczatkowej populacji
-    unsigned eliteSize = 0.1 * initialPopulation;
+    // Do kolejnej iteracji jako rodzice przepuszczane jest 50% liczby osobnikow w poczatkowej populacji
+    unsigned eliteSize = 0.5 * initialPopulation;
 
     // Rozwiazanie wygenerowane zachlannie
     Route greedy = generateInitialSolution();
+    // Obliczenie kosztu trasy
     calculateRouteCost(greedy);
+    // Dodanie trasy do populacji
     population.emplace_back(greedy);
 
     /*
-        10% osobnikow w poczatkowej populacji wywodzi sie z rozwiazania zachlannego;
+        10% osobnikow w poczatkowej populacji wywodzi sie z rozwiazania zachlannego
         razem z bazowym rozwiazaniem wygenerowanym zachlannie
     */
     while( population.size() <(unsigned)( 0.1*initialPopulation ) )
     {
-
+        // Wygenerowanie osobnikow pochodzacych z rozwiazania zachlannego - losowe przestawianie elementow trasy
         Route r = greedy;
+        r.procedureSwap( rand()% routeElements, rand() % routeElements );
         r.procedureSwap( rand()% routeElements, rand() % routeElements );
         calculateRouteCost(r);
         population.emplace_back(r);
@@ -149,17 +150,18 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
         population.emplace_back(r);
     }
 
+    // Sortowanie populacji wg kosztow tras - podejscie rankingowe
     std::sort(population.begin(), population.end());
 
     unsigned timeCheck = 0;
-    // 20% liczby przystankow na trasie
-    unsigned p1 = 0.2 * routeElements;
-    // 10% liczby przystankow na trasie
-    unsigned p2 = 0.1 * routeElements;
 
+    // Czas znalezienia najlepszego rozwiazania
     std::chrono::duration<double, std::milli> duration;
+    // Czas przerwania algorytmu - warunek stopu
     std::chrono::duration<double, std::milli> duration1;
+    // Najlepsze znalezione rozwiazanie
     unsigned bestSolution = population[0].getCost();
+    // Zmienne przechowujace wartosc czasu na poczatku i koncu pomiarow
     auto start = std::chrono::steady_clock::now();
     auto end = std::chrono::steady_clock::now();
 
@@ -178,17 +180,20 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
                 // Mutacja typu scramble
                 if( mutationChoice )
                 {
-                    population[i].mutateScramble( rand() % p1 );
+                    // Wybierana jest losowa liczba elementow trasy do poprzestawiania
+                    population[i].mutateScramble( rand() % routeElements );
                 }
                 // Mutacja typu inverse
                 else
                 {
+                    // Odwracanie trasy pomiedzy indeksami idx1, idx2
                     int idx1 = 0, idx2 = 0;
 
+                    // Unikniecie braku efektu mutacji
                     while(idx1==idx2)
                     {
                         idx1 = rand() % routeElements;
-                        idx2 = ( idx1 + ( rand()% p2 ) ) % routeElements;
+                        idx2 = rand() % routeElements;
                     }
                     population[i].mutateInverse( idx1, idx2 );
                 }
@@ -198,6 +203,7 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
             // Krzyzowanie
             if( (double)rand() / (double)RAND_MAX < crossoverFactor )
             {
+                // Wybranie drugiego osobnika - rozwiazania - do krzyzowania
                 unsigned secIndex = rand()% populationSize;
                 if(secIndex == i) secIndex = ( secIndex + 1 ) % populationSize;
                 Route offspring = population[i].crossoverPMX( population[secIndex] );
@@ -206,9 +212,9 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
             }
         }
 
-        // Sortowanie populacji rozwiazan
         std::sort(population.begin(), population.end());
 
+        // Jezeli znaleziono nowe najlepsze rozwiazanie
         if( population[0].getCost() < bestSolution )
         {
             auto end1 = std::chrono::steady_clock::now();
@@ -240,11 +246,12 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
         timeCheck++;
     }
 
-    // Obliczenie czasu, wyniki
+    // Obliczenie czasu, wypisanie wynikow
     duration = end - start;
-    std::cout<<duration.count()<<" ms; ";
+    double timeResult = duration.count();
+    std::cout<<timeResult<<" ms; ";
     std::cout<<bestSolution<<"\n";
-    return bestSolution;
+    return timeResult;
 }
 
 // Obliczanie i ustawianie kosztu sciezki
@@ -280,7 +287,7 @@ Route Graph::generateInitialSolution() const
         int curIndex = visited.back();
         for(int j=0; j<size; j++)
         {
-            // Zamiast std::find
+            // Czy wierzcholek byl juz odwiedzony
             bool isInVisited = false;
             for(unsigned k=0; k < visited.size(); k++)
             {
@@ -290,16 +297,18 @@ Route Graph::generateInitialSolution() const
                     break;
                 }
             }
-
+            // Jezeli wierzcholek nieodwiedzony i minimum w wierszu
             if(!isInVisited && matrix[curIndex][j]<dstMin)
             {
+                // Wyznaczony kolejny wierzcholek na trasie
                 dst = j;
                 dstMin = matrix[curIndex][j];
             }
 
         }
-        // Dodajemy "minimalny" wierzcholek do odwiedzonych, powiekszamy koszt
+        // Dodajemy wyznaczony wierzcholek do odwiedzonych, powiekszamy koszt
         visited.push_back(dst);
+        // Wierzcholek dodany do trasy
         res[i] = dst;
     }
     // Na koncu wracamy do korzenia
