@@ -3,6 +3,7 @@
 #include <time.h>
 #include <math.h>
 #include <climits>
+#include <fstream>
 
 #include "Graph.h"
 #include "Route.h"
@@ -18,17 +19,6 @@ int main()
     // Inicjalizujemy generator liczb pseudolosowych za pomoca wartosci czasu pobranego z systemu
     srand(time(NULL));
 
-    /*
-    Route r(5);
-    std::cout<<r.toString()<<"\n";
-    r.mutateScramble(3);
-    std::cout<<r.toString()<<"\n";
-    */
-
-    //Route a(std::vector<int> {10, 9, 6,  5, 3, 7, 8,  1,4, 2});
-    //Route b(std::vector<int> {10, 5, 3, 7, 4, 1, 8,  2, 6, 9});
-    //std::cout<<a.crossoverPMX(b).toString()<<"\n";
-    //std::cout<<b.crossoverPMX(a).toString()<<"\n";
     // Graf, ktory jest wykorzystywany w poszczegolnych opcjach
     Graph g;
 
@@ -37,7 +27,7 @@ int main()
     // Kryterium stopu - sekundy
     int seconds = 120;
     // Wielkosc populacji poczatkowej
-    int initialPopulation = 1e4;
+    int initialPopulation = 1e3;
     // Wspolczynnik mutacji
     double mutationFactor = 0.01;
     // Wspolczynnik krzyzowania
@@ -45,7 +35,7 @@ int main()
     // Wybor metody mutacji - domyslnie inverse
     bool mutationOption = false;
 
-    //g.printGraph();
+    std::string chosenOption = ( (mutationOption) ? "scramble" : "inverse" );
 
     while(!isFinished)
     {
@@ -59,6 +49,7 @@ int main()
         std::cout<<"5. Ustawienie wspolczynnika krzyzowania\n";
         std::cout<<"6. Wybor metody mutacji\n";
         std::cout<<"7. Uruchom algorytm\n";
+        std::cout<<"8. Zbiorcze badanie dla populacji rozmiaru od 10^3 do 10^5 i zapis do pliku\n";
         std::cout<<"-----------------------------------------------------\n";
         std::cout<<"Wybierz numer opcji: \n";
 
@@ -79,9 +70,6 @@ int main()
                 std::cout<<"Podaj nazwe pliku z rozszerzeniem: ";
                 std::cin>>fname;
                 g = Graph(fname);
-                //std::cout<<"\n";
-                //g.printGraph();
-                std::cout<<"\n";
             }
             catch(std::string& ex)
             {
@@ -91,61 +79,106 @@ int main()
         }
         case '2':
         {
+            std::cout<<"\n";
+            g.printGraph();
+            std::cout<<"\n";
+            break;
+        }
+        case '3':
+        {
             std::cout<<"Podaj kryterium stopu (sekundy): ";
             std::cin>>seconds;
             std::cout<<"Ustalono kryterium stopu na "<<seconds<<" sek.\n";
             break;
         }
-        case '3':
+        case '4':
         {
             std::cout<<"Podaj wielkosc populacji poczatkowej: ";
             std::cin>>initialPopulation;
             std::cout<<"Ustalono wielkosc populacji poczatkowej "<<initialPopulation<<".\n";
             break;
         }
-        case '4':
+        case '5':
         {
             std::cout<<"Podaj wspolczynnik mutacji (0-1): ";
             std::cin>>mutationFactor;
             std::cout<<"Ustalono wspolczynnik mutacji na "<<mutationFactor<<"\n";
             break;
         }
-        case '5':
+        case '6':
         {
             std::cout<<"Podaj wspolczynnik krzyzowania (0-1): ";
             std::cin>>crossoverFactor;
             std::cout<<"Ustalono wspolczynnik krzyzowania na "<<crossoverFactor<<"\n";
             break;
         }
-        case '6':
+        case '7':
         {
             std::cout<<"Wybierz metode mutacji (0 - inverse, 1 - scramble): ";
             int mutationChoice = 0;
             std::cin>>mutationChoice;
             mutationOption = (bool)mutationChoice;
-            std::string chosenOption = ( (mutationOption) ? "scramble" : "inverse" );
+            chosenOption = ( (mutationOption) ? "scramble" : "inverse" );
             std::cout<<"Wybrano "<<chosenOption<<".\n";
             break;
         }
-        case '7':
+        case '8':
         {
             {
-
-
                 int repeats = 1;
                 double timeSum = 0;
                 std::cout<<"Podaj liczbe powtorzen: ";
                 std::cin>>repeats;
-
                 for(int i=0; i<repeats; i++)
                 {
-                    timeSum+=g.solveGA(seconds*1000, initialPopulation, mutationFactor,
-                                       crossoverFactor, mutationOption);
+                    std::pair<double, unsigned> result = g.solveGA(seconds*1000, initialPopulation, mutationFactor,
+                                                         crossoverFactor, mutationOption);
+                    timeSum += result.first;
+                    std::cout<<"t="<<result.first<<" ms, k="<<result.second<<"\n";
+
                 }
                 std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
             }
             break;
         }
+
+        // Zbiorcze badanie i zapis wynikow do pliku
+        case '9':
+        {
+            try
+            {
+                std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
+                int repeats = 1;
+
+                std::cout<<"Podaj liczbe powtorzen: ";
+                std::cin>>repeats;
+                for(unsigned x=3; x<=5; x++)
+                {
+                    unsigned population = (unsigned)std::pow(10, x);
+                    std::cout<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
+                    std::fstream recordFile(recordName, std::ios::out | std::ios::app);
+                    recordFile<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
+                    recordFile.close();
+                    double timeSum = 0;
+                    for(int i=0; i<repeats; i++)
+                    {
+                        std::pair<double, unsigned> result = g.solveGA(seconds*1000, population, mutationFactor,
+                                                             crossoverFactor, mutationOption);
+                        timeSum+=result.first;
+                        std::fstream recordFile(recordName, std::ios::out | std::ios::app);
+                        recordFile<<result.first<<";"<<result.second<<"\n";
+                        recordFile.close();
+                    }
+                    std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
+                }
+            }
+            catch (...)
+            {
+                std::cout<<"Wystapil blad!\n";
+            }
+            break;
+        }
+
         default:
         {
             std::cout<<"Jeszcze niezaimplementowane.\n";

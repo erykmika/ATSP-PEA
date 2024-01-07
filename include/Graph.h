@@ -29,12 +29,15 @@ class Graph
         // Wypisywanie grafu/macierzy
         void printGraph() const;
         // Metoda realizujaca algorytm genetyczny, zwraca czas, w ktorym znaleziono rozwiazanie
-        double solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
+        std::pair<double, unsigned> solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
                        double crossoverFactor, bool mutationChoice) const;
         // Obliczanie kosztu sciezki dla grafu
         void calculateRouteCost(Route& r) const;
 
         Route generateInitialSolution() const;
+
+        // Zwrocenie rozmiaru problemu
+        int getSize() const;
     private:
         // Rozmiar macierzy/problemu ATSP
         int size;

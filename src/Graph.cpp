@@ -111,7 +111,7 @@ void Graph::printGraph() const
 }
 
 // Glowna metoda klasy rozwiazujaca problem TSP za pomoca algorytmu genetycznego - zwraca czas znalezienia najlepszego rozwiazania [ms]
-double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
+std::pair<double, unsigned>  Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
                       double crossoverFactor, bool mutationChoice) const
 {
     // Dynamiczna tablica - wektor - przechowujaca populacje
@@ -246,12 +246,13 @@ double Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mut
         timeCheck++;
     }
 
-    // Obliczenie czasu, wypisanie wynikow
+    // Obliczenie czasu
     duration = end - start;
     double timeResult = duration.count();
-    std::cout<<timeResult<<" ms; ";
-    std::cout<<bestSolution<<"\n";
-    return timeResult;
+    //std::cout<<timeResult<<";";
+    //std::cout<<bestSolution<<"\n";
+    std::pair<double, unsigned> result = {timeResult, bestSolution};
+    return result;
 }
 
 // Obliczanie i ustawianie kosztu sciezki
@@ -317,3 +318,7 @@ Route Graph::generateInitialSolution() const
     return res;
 }
 
+int Graph::getSize() const
+{
+    return size;
+}
