@@ -110,7 +110,7 @@ void Graph::printGraph() const
     }
 }
 
-// Glowna metoda klasy rozwiazujaca problem TSP za pomoca algorytmu genetycznego - zwraca czas znalezienia najlepszego rozwiazania [ms]
+// Glowna metoda klasy rozwiazujaca problem TSP za pomoca algorytmu genetycznego - zwraca czas [ms] i koszt
 std::pair<double, unsigned>  Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
                       double crossoverFactor, bool mutationChoice) const
 {

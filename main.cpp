@@ -43,13 +43,14 @@ int main()
 
         std::cout<<"0. Wyjscie\n";
         std::cout<<"1. Wczytaj dane z pliku\n";
-        std::cout<<"2. Wprowadz kryterium stopu (sekundy)\n";
-        std::cout<<"3. Ustawienie wielkosci populacji poczatkowej\n";
-        std::cout<<"4. Ustawienie wspolczynnika mutacji\n";
-        std::cout<<"5. Ustawienie wspolczynnika krzyzowania\n";
-        std::cout<<"6. Wybor metody mutacji\n";
-        std::cout<<"7. Uruchom algorytm\n";
-        std::cout<<"8. Zbiorcze badanie dla populacji rozmiaru od 10^3 do 10^5 i zapis do pliku\n";
+        std::cout<<"2. Wypisz wczytane dane\n";
+        std::cout<<"3. Wprowadz kryterium stopu (sekundy)\n";
+        std::cout<<"4. Ustawienie wielkosci populacji poczatkowej\n";
+        std::cout<<"5. Ustawienie wspolczynnika mutacji\n";
+        std::cout<<"6. Ustawienie wspolczynnika krzyzowania\n";
+        std::cout<<"7. Wybor metody mutacji\n";
+        std::cout<<"8. Uruchom algorytm\n";
+        std::cout<<"9. Zbiorcze badanie i zapis do pliku\n";
         std::cout<<"-----------------------------------------------------\n";
         std::cout<<"Wybierz numer opcji: \n";
 
@@ -147,14 +148,18 @@ int main()
         {
             try
             {
-                std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
+                //std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
                 int repeats = 1;
 
                 std::cout<<"Podaj liczbe powtorzen: ";
                 std::cin>>repeats;
-                for(unsigned x=3; x<=5; x++)
+                //double mutFactors[3] = {0.02, 0.05, 0.1};
+                double mutFactors[2] = {0.05, 0.1};
+                for(unsigned x=0; x<2; x++)
                 {
-                    unsigned population = (unsigned)std::pow(10, x);
+                    unsigned population = /*(unsigned)std::pow(10, x)*/ 1e5;
+                    mutationFactor = mutFactors[x];
+                    std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
                     std::cout<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
                     std::fstream recordFile(recordName, std::ios::out | std::ios::app);
                     recordFile<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
@@ -171,6 +176,37 @@ int main()
                     }
                     std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
                 }
+
+                /*
+                mutationOption = !mutationOption;
+                chosenOption = ( (mutationOption) ? "scramble" : "inverse" );
+
+                //int repeats = 1;
+
+                //std::cout<<"Podaj liczbe powtorzen: ";
+                //std::cin>>repeats;
+                //double mutFactors[3] = {0.02, 0.05, 0.1};
+                for(unsigned x=0; x<3; x++)
+                {
+                    unsigned population = (unsigned)std::pow(10, x) 1e5;
+                    mutationFactor = mutFactors[x];
+                    std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
+                    std::cout<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
+                    std::fstream recordFile(recordName, std::ios::out | std::ios::app);
+                    recordFile<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
+                    recordFile.close();
+                    double timeSum = 0;
+                    for(int i=0; i<repeats; i++)
+                    {
+                        std::pair<double, unsigned> result = g.solveGA(seconds*1000, population, mutationFactor,
+                                                             crossoverFactor, mutationOption);
+                        timeSum+=result.first;
+                        std::fstream recordFile(recordName, std::ios::out | std::ios::app);
+                        recordFile<<result.first<<";"<<result.second<<"\n";
+                        recordFile.close();
+                    }
+                    std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
+                }*/
             }
             catch (...)
             {
