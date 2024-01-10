@@ -131,7 +131,7 @@ std::pair<double, unsigned>  Graph::solveGA(unsigned timeLimit, unsigned initial
         10% osobnikow w poczatkowej populacji wywodzi sie z rozwiazania zachlannego
         razem z bazowym rozwiazaniem wygenerowanym zachlannie
     */
-    while( population.size() <(unsigned)( 0.1*initialPopulation ) )
+    while( population.size() < (unsigned)( 0.1*initialPopulation ) )
     {
         // Wygenerowanie osobnikow pochodzacych z rozwiazania zachlannego - losowe przestawianie elementow trasy
         Route r = greedy;
