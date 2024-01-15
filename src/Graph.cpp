@@ -112,7 +112,7 @@ void Graph::printGraph() const
 
 // Glowna metoda klasy rozwiazujaca problem TSP za pomoca algorytmu genetycznego - zwraca czas [ms] i koszt
 std::pair<double, unsigned>  Graph::solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
-                      double crossoverFactor, bool mutationChoice) const
+        double crossoverFactor, bool mutationChoice, std::string recordName) const
 {
     // Dynamiczna tablica - wektor - przechowujaca populacje
     std::vector<Route> population;
@@ -219,10 +219,16 @@ std::pair<double, unsigned>  Graph::solveGA(unsigned timeLimit, unsigned initial
         {
             auto end1 = std::chrono::steady_clock::now();
             duration1 = end1 - start;
-            if(duration1.count() > timeLimit) break;
+            double curTime = duration1.count();
+            if(curTime > timeLimit) break;
             end = end1;
             bestSolution = population[0].getCost();
-            //std::cout<<bestSolution<<"\n";
+            if(recordName!="")
+            {
+                std::fstream recordFile(recordName, std::ios::out | std::ios::app);
+                recordFile<<(int)curTime<<";"<<bestSolution<<"\n";
+                recordFile.close();
+            }
         }
 
         /*

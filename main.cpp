@@ -35,6 +35,11 @@ int main()
     // Wybor metody mutacji - domyslnie inverse
     bool mutationOption = false;
 
+    // Parametry do badan zbiorczych
+    std::string files[3] = {"ftv47.atsp", "ftv170.atsp", "rbg403.atsp"};
+    unsigned timeArr[3] = {120, 240, 360};
+    double mutFactors[3] = {0.02, 0.05, 0.1};
+
     std::string chosenOption = ( (mutationOption) ? "scramble" : "inverse" );
 
     while(!isFinished)
@@ -50,7 +55,8 @@ int main()
         std::cout<<"6. Ustawienie wspolczynnika krzyzowania\n";
         std::cout<<"7. Wybor metody mutacji\n";
         std::cout<<"8. Uruchom algorytm\n";
-        std::cout<<"9. Zbiorcze badanie i zapis do pliku\n";
+        std::cout<<"a. Zbiorcze badanie dla pokolen, wsp. mutacji = 0.01, rozne populacje - zapis do plikow\n";
+        std::cout<<"b. Zbiorcze badanie dla pokolen, rozne wsp. mutacji, populacja 10e5 - zapis do plikow\n";
         std::cout<<"-----------------------------------------------------\n";
         std::cout<<"Wybierz numer opcji: \n";
 
@@ -143,74 +149,52 @@ int main()
             break;
         }
 
-        // Zbiorcze badanie i zapis wynikow do pliku
-        case '9':
+        // Zbiorcze badania
+        case 'a':
         {
-            try
+            std::string files[3] = {"ftv47.atsp", "ftv170.atsp", "rbg403.atsp"};
+            for(int f=0; f<3; f++)
             {
-                //std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
-                int repeats = 1;
-
-                std::cout<<"Podaj liczbe powtorzen: ";
-                std::cin>>repeats;
-                //double mutFactors[3] = {0.02, 0.05, 0.1};
-                double mutFactors[2] = {0.05, 0.1};
-                for(unsigned x=0; x<2; x++)
+                g = Graph(files[f]);
+                bool mutationOptionX = false;
+                for(int i=0; i<2; i++)
                 {
-                    unsigned population = /*(unsigned)std::pow(10, x)*/ 1e5;
-                    mutationFactor = mutFactors[x];
-                    std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
-                    std::cout<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
-                    std::fstream recordFile(recordName, std::ios::out | std::ios::app);
-                    recordFile<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
-                    recordFile.close();
-                    double timeSum = 0;
-                    for(int i=0; i<repeats; i++)
+                    // Populacje poczatkowe 10e3 do 10e5
+                    for(int j=1000; j<=100000; j*=10)
                     {
-                        std::pair<double, unsigned> result = g.solveGA(seconds*1000, population, mutationFactor,
-                                                             crossoverFactor, mutationOption);
-                        timeSum+=result.first;
+                        std::string mutationChoice = ((mutationOptionX) ? "scramble" : "inverse");
+                        std::string recordName = std::to_string(g.getSize()) + mutationChoice + std::to_string(j) + ".csv";
                         std::fstream recordFile(recordName, std::ios::out | std::ios::app);
-                        recordFile<<result.first<<";"<<result.second<<"\n";
+                        std::cout<<g.getSize()<<";"<<mutationChoice<<";"<<j<<"\n";
+                        recordFile<<g.getSize()<<";"<<mutationChoice<<";"<<j<<"\n";
                         recordFile.close();
+                        g.solveGA(timeArr[f]*1000, j, mutationFactor, crossoverFactor, mutationOptionX, recordName);
                     }
-                    std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
+                    mutationOptionX = !mutationOptionX;
                 }
-
-                /*
-                mutationOption = !mutationOption;
-                chosenOption = ( (mutationOption) ? "scramble" : "inverse" );
-
-                //int repeats = 1;
-
-                //std::cout<<"Podaj liczbe powtorzen: ";
-                //std::cin>>repeats;
-                //double mutFactors[3] = {0.02, 0.05, 0.1};
-                for(unsigned x=0; x<3; x++)
-                {
-                    unsigned population = (unsigned)std::pow(10, x) 1e5;
-                    mutationFactor = mutFactors[x];
-                    std::string recordName = std::to_string(g.getSize()) + chosenOption + std::to_string(mutationFactor) + ".csv";
-                    std::cout<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
-                    std::fstream recordFile(recordName, std::ios::out | std::ios::app);
-                    recordFile<<"mut;"<<chosenOption<<";p;"<<population<<";m;"<<mutationFactor<<";c;"<<crossoverFactor<<";tl;"<<seconds<<"\n";
-                    recordFile.close();
-                    double timeSum = 0;
-                    for(int i=0; i<repeats; i++)
-                    {
-                        std::pair<double, unsigned> result = g.solveGA(seconds*1000, population, mutationFactor,
-                                                             crossoverFactor, mutationOption);
-                        timeSum+=result.first;
-                        std::fstream recordFile(recordName, std::ios::out | std::ios::app);
-                        recordFile<<result.first<<";"<<result.second<<"\n";
-                        recordFile.close();
-                    }
-                    std::cout<<"Sredni czas: "<<timeSum/(double)repeats<<" ms.\n";
-                }*/
             }
-            catch (...)
+            break;
+        }
+        case 'b':
+        {
+            for(int f=0; f<3; f++)
             {
-                std::cout<<"Wystapil blad!\n";
+                g = Graph(files[f]);
+                bool mutationOptionX = false;
+                for(int i=0; i<2; i++)
+                {
+                    for(int j=0; j<3; j++)
+                    {
+                        std::string mutationChoice = ((mutationOptionX) ? "scramble" : "inverse");
+                        std::string recordName = std::to_string(g.getSize()) + mutationChoice + std::to_string(mutFactors[j]) + "mut.csv";
+                        std::fstream recordFile(recordName, std::ios::out | std::ios::app);
+                        std::cout<<g.getSize()<<";"<<mutationChoice<<";"<<mutFactors[j]<<"\n";
+                        recordFile<<g.getSize()<<";"<<mutationChoice<<";"<<j<<"\n";
+                        recordFile.close();
+                        g.solveGA(timeArr[f]*1000, 1e5, mutFactors[j], crossoverFactor, mutationOptionX, recordName);
+                    }
+                    mutationOptionX = !mutationOptionX;
+                }
             }
             break;
         }

@@ -30,7 +30,7 @@ class Graph
         void printGraph() const;
         // Metoda realizujaca algorytm genetyczny, zwraca czas, w ktorym znaleziono rozwiazanie
         std::pair<double, unsigned> solveGA(unsigned timeLimit, unsigned initialPopulation, double mutationFactor,
-                       double crossoverFactor, bool mutationChoice) const;
+                       double crossoverFactor, bool mutationChoice, std::string recordName = "") const;
         // Obliczanie kosztu sciezki dla grafu
         void calculateRouteCost(Route& r) const;
 
