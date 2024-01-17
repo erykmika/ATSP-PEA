@@ -3,3 +3,6 @@
 *.depend
 *.layout
 *.exe
+*.docx
+
+*.*tsp
