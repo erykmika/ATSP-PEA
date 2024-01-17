@@ -8,7 +8,7 @@ class PermutationArray
         PermutationArray();
         PermutationArray(int n);
         ~PermutationArray();
-        static int factorial(int n);
+        static unsigned long long factorial(int n);
         static void swap(int& a, int& b);
         int &operator[](int i);
         void nextPermutation();

@@ -25,7 +25,7 @@ PermutationArray::~PermutationArray()
 }
 
 // Obliczanie silni - liczba mozliwych permutacji, pomocniczna metoda statyczna
-int PermutationArray::factorial(int n)
+unsigned long long PermutationArray::factorial(int n)
 {
     if(n==1) return 1;
     return (n * factorial(n-1));

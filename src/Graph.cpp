@@ -155,7 +155,7 @@ double Graph::timeBruteForceATSP()
     unsigned int min_cost = UINT_MAX;  // Minimalny koszt - ustawiamy na maks, bedziemy szukac minimum.
 
     // Korzystajac z metody generujacej kolejne permutacje, przechodzimy po wszystkich w petli for
-    for(int p=0; p < PermutationArray::factorial(permutatedElements); p++)
+    for(unsigned long long p=0; p < PermutationArray::factorial(permutatedElements); p++)
     {
         // Obecny koszt - zaczynamy od krawedzi laczacej wierzcholek startowy oraz pierwszy wierzcholek z permutacji n-1 pozostalych
         unsigned int current_cost = matrix[source][permutation[0]];
