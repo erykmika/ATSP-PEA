@@ -4,3 +4,6 @@
 # generated directories
 bin/
 obj/
+
+*.*tsp
+*.xlsx
